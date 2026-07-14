@@ -9,6 +9,7 @@ import { useLead } from "@/lead";
 export function Navbar() {
   const { openLeadModal } = useLead();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,17 +23,40 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Handle body scroll locking when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
+
+  // Automatically close mobile menu on screen resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMenuOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-white/80 backdrop-blur-md border-b border-border-subtle/50 shadow-sm"
+        isScrolled || isMenuOpen
+          ? "bg-white/90 backdrop-blur-md border-b border-border-subtle/50 shadow-sm"
           : "bg-bg-page border-b border-border-subtle"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center group">
+        <Link href="/" className="flex items-center group" onClick={() => setIsMenuOpen(false)}>
           <div className="relative h-9 w-12">
             <Image
               src="/logo.webp"
@@ -57,8 +81,8 @@ export function Navbar() {
           ))}
         </nav>
 
-        {/* Action Area (Phone, CTA) */}
-        <div className="flex items-center gap-6">
+        {/* Action Area (Phone, CTA, Hamburger) */}
+        <div className="flex items-center gap-4 md:gap-6">
           {/* Phone */}
           <a
             href="tel:1-800-356-8933"
@@ -72,16 +96,73 @@ export function Navbar() {
 
           {/* CTA Button */}
           <button
-            onClick={openLeadModal}
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-text-accent-dark font-semibold text-xs tracking-wider transition-colors shadow-sm cursor-pointer"
+            onClick={() => {
+              setIsMenuOpen(false);
+              openLeadModal();
+            }}
+            className="inline-flex items-center gap-1.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-text-accent-dark font-semibold text-xs tracking-wider transition-colors shadow-sm cursor-pointer"
           >
             <span>Free Consultation</span>
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
           </button>
+
+          {/* Hamburger Menu Button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 rounded-lg text-text-page hover:bg-black/5 transition-colors focus:outline-none cursor-pointer"
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? (
+              <svg className="w-6 h-6 transition-transform duration-200 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {isMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 h-[calc(100vh-73px)] bg-white/95 backdrop-blur-md border-t border-border-subtle/50 animate-fade-in overflow-y-auto">
+          <div className="px-6 py-8 flex flex-col justify-between h-full max-h-[500px]">
+            <nav className="flex flex-col gap-6">
+              {CONTENT.navigation.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-lg font-semibold text-text-page/80 hover:text-text-page transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="flex flex-col gap-6 mt-8 pt-8 border-t border-border-subtle/50">
+              <a
+                href="tel:1-800-356-8933"
+                className="flex items-center gap-3 text-sm font-semibold text-text-page/90 hover:opacity-80 transition-opacity"
+              >
+                <div className="p-2.5 rounded-lg bg-neutral-100 text-text-page/60">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-[10px] text-text-page/50 font-bold uppercase tracking-wider">Call Us</div>
+                  <span className="text-base font-semibold">1-800-356-8933</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
