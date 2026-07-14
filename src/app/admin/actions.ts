@@ -212,3 +212,120 @@ export async function deleteGalleryAction(id: number) {
     return { error: error.message };
   }
 }
+
+// STUDENT UPSERT ACTION
+export async function upsertStudentAction(payload: {
+  id?: number;
+  name: string;
+  email?: string;
+  phone?: string;
+  regnumber: string;
+  isNew: boolean;
+}) {
+  await requireEditor();
+  const { id, name, email, phone, regnumber, isNew } = payload;
+
+  if (!name || !regnumber) {
+    throw new Error("Name and registration number are required");
+  }
+
+  try {
+    if (isNew) {
+      // Check if regnumber already exists
+      const existing = await db.execute({
+        sql: "SELECT id FROM students WHERE LOWER(regnumber) = LOWER(?)",
+        args: [regnumber.trim()],
+      });
+      if (existing.rows.length > 0) {
+        return { error: "A student with this registration number already exists" };
+      }
+
+      await db.execute({
+        sql: "INSERT INTO students (name, email, phone, regnumber, created_at) VALUES (?, ?, ?, ?, ?)",
+        args: [name.trim(), email?.trim() || null, phone?.trim() || null, regnumber.trim().toUpperCase(), new Date().toISOString()],
+      });
+    } else {
+      if (!id) throw new Error("ID is required for editing a student");
+      // Check duplicate regnumber
+      const existing = await db.execute({
+        sql: "SELECT id FROM students WHERE LOWER(regnumber) = LOWER(?) AND id != ?",
+        args: [regnumber.trim(), id],
+      });
+      if (existing.rows.length > 0) {
+        return { error: "Another student with this registration number already exists" };
+      }
+
+      await db.execute({
+        sql: "UPDATE students SET name = ?, email = ?, phone = ?, regnumber = ? WHERE id = ?",
+        args: [name.trim(), email?.trim() || null, phone?.trim() || null, regnumber.trim().toUpperCase(), id],
+      });
+    }
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+// STUDENT DELETE ACTION
+export async function deleteStudentAction(id: number) {
+  await requireEditor();
+  try {
+    await db.execute({
+      sql: "DELETE FROM students WHERE id = ?",
+      args: [id],
+    });
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+// CERTIFICATE UPSERT ACTION
+export async function upsertCertificateAction(payload: {
+  id?: number;
+  studentId: number;
+  courseId: string;
+  issueDate: string;
+  grade: string;
+  status: string;
+  isNew: boolean;
+}) {
+  await requireEditor();
+  const { id, studentId, courseId, issueDate, grade, status, isNew } = payload;
+
+  if (!studentId || !courseId || !issueDate || !grade) {
+    throw new Error("Missing required fields");
+  }
+
+  try {
+    if (isNew) {
+      await db.execute({
+        sql: "INSERT INTO certificates (student_id, course_id, issue_date, grade, status, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        args: [studentId, courseId.trim(), issueDate.trim(), grade.trim(), status.trim(), new Date().toISOString()],
+      });
+    } else {
+      if (!id) throw new Error("ID is required for editing a certificate");
+      await db.execute({
+        sql: "UPDATE certificates SET student_id = ?, course_id = ?, issue_date = ?, grade = ?, status = ? WHERE id = ?",
+        args: [studentId, courseId.trim(), issueDate.trim(), grade.trim(), status.trim(), id],
+      });
+    }
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+// CERTIFICATE DELETE ACTION
+export async function deleteCertificateAction(id: number) {
+  await requireEditor();
+  try {
+    await db.execute({
+      sql: "DELETE FROM certificates WHERE id = ?",
+      args: [id],
+    });
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}

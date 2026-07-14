@@ -11,7 +11,8 @@ export default async function AdminDashboardOverview() {
 
   let coursesCount = 0;
   let galleryCount = 0;
-  let usersCount = 0;
+  let studentsCount = 0;
+  let certsCount = 0;
 
   try {
     const courseRes = await db.execute("SELECT COUNT(*) as count FROM courses");
@@ -20,8 +21,11 @@ export default async function AdminDashboardOverview() {
     const galleryRes = await db.execute("SELECT COUNT(*) as count FROM gallery");
     galleryCount = Number(galleryRes.rows[0].count);
 
-    const userRes = await db.execute("SELECT COUNT(*) as count FROM users");
-    usersCount = Number(userRes.rows[0].count);
+    const studentRes = await db.execute("SELECT COUNT(*) as count FROM students");
+    studentsCount = Number(studentRes.rows[0].count);
+
+    const certRes = await db.execute("SELECT COUNT(*) as count FROM certificates");
+    certsCount = Number(certRes.rows[0].count);
   } catch (error) {
     console.error("Dashboard count queries failed, utilizing fallback counts:", error);
   }
@@ -29,7 +33,8 @@ export default async function AdminDashboardOverview() {
   const statCards = [
     { label: "Active Courses", val: coursesCount, desc: "Syllabus modules and details", href: "/admin/courses" },
     { label: "Gallery Photos", val: galleryCount, desc: "Bento grid photo items", href: "/admin/gallery" },
-    { label: "Registered Admins", val: usersCount, desc: "Team members with admin access", href: "#" },
+    { label: "Enrolled Students", val: studentsCount, desc: "Profiles and registration numbers", href: "/admin/students" },
+    { label: "Certificates Issued", val: certsCount, desc: "Issued course certificates", href: "/admin/certificates" },
   ];
 
   return (
@@ -39,12 +44,12 @@ export default async function AdminDashboardOverview() {
           Overview Dashboard
         </h2>
         <p className="text-xs text-text-page/60 font-sans mt-1">
-          Welcome back, {user.name || user.email}! Manage your site content, courses details, and photo assets below.
+          Welcome back, {user.name || user.email}! Manage your site content, courses details, students, and certifications below.
         </p>
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, idx) => (
           <div 
             key={idx}

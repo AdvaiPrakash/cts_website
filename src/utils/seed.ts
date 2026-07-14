@@ -62,6 +62,29 @@ async function main() {
     )
   `);
 
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS students (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT,
+      phone TEXT,
+      regnumber TEXT UNIQUE NOT NULL,
+      created_at TEXT NOT NULL
+    )
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS certificates (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+      course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+      issue_date TEXT NOT NULL,
+      grade TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'Active',
+      created_at TEXT NOT NULL
+    )
+  `);
+
   console.log("Tables created successfully.");
 
   // Seed courses
@@ -238,6 +261,29 @@ async function main() {
     await db.execute({
       sql: `INSERT INTO gallery (id, title, category, image, gridClass) VALUES (?, ?, ?, ?, ?)`,
       args: [item.id, item.title, item.category, item.image, item.gridClass],
+    });
+  }
+
+  // Seed dummy students & certificates if empty
+  const studentCheck = await db.execute("SELECT count(*) as count FROM students");
+  if (Number(studentCheck.rows[0].count) === 0) {
+    console.log("Seeding dummy students and certificates...");
+    await db.execute({
+      sql: `INSERT INTO students (id, name, email, phone, regnumber, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+      args: [1, "Johnatan Doe", "johnatan@example.com", "+91 98765 43210", "CTS-2026-001", new Date().toISOString()],
+    });
+    await db.execute({
+      sql: `INSERT INTO students (id, name, email, phone, regnumber, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+      args: [2, "Rebeca Smith", "rebeca@example.com", "+91 98765 43211", "CTS-2026-002", new Date().toISOString()],
+    });
+
+    await db.execute({
+      sql: `INSERT INTO certificates (id, student_id, course_id, issue_date, grade, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      args: [1, 1, "cpa", "2026-06-15", "A+", "Active", new Date().toISOString()],
+    });
+    await db.execute({
+      sql: `INSERT INTO certificates (id, student_id, course_id, issue_date, grade, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      args: [2, 2, "tally-gst", "2026-06-20", "A", "Active", new Date().toISOString()],
     });
   }
 

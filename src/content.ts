@@ -163,9 +163,10 @@ export const CONTENT: SiteContent = {
   },
   navigation: [
     { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
     { label: "Courses", href: "/features" },
     { label: "Gallery", href: "/gallery" },
-    { label: "About", href: "/about" },
+    { label: "Certificates", href: "/certificates" },
     { label: "Contact", href: "/contact" },
   ],
   hero: {
