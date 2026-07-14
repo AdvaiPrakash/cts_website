@@ -17,6 +17,59 @@ interface Certificate {
   courseTitle: string;
 }
 
+function sanitizeStylesheets() {
+  const stylesToRestore: { sheet: CSSStyleSheet; rules: { index: number; cssText: string }[] }[] = [];
+  
+  if (typeof window === "undefined" || !document.styleSheets) {
+    return () => {};
+  }
+  
+  for (let i = 0; i < document.styleSheets.length; i++) {
+    const sheet = document.styleSheets[i];
+    try {
+      if (!sheet.cssRules) continue;
+      
+      const restoredRules: { index: number; cssText: string }[] = [];
+      const rulesToDelete: number[] = [];
+      
+      for (let j = 0; j < sheet.cssRules.length; j++) {
+        const rule = sheet.cssRules[j];
+        if (
+          rule.cssText.includes("lab(") || 
+          rule.cssText.includes("oklch(") || 
+          rule.cssText.includes("oklab(") || 
+          rule.cssText.includes("lch(")
+        ) {
+          restoredRules.push({ index: j, cssText: rule.cssText });
+          rulesToDelete.push(j);
+        }
+      }
+      
+      if (rulesToDelete.length > 0) {
+        for (let k = rulesToDelete.length - 1; k >= 0; k--) {
+          sheet.deleteRule(rulesToDelete[k]);
+        }
+        stylesToRestore.push({ sheet, rules: restoredRules });
+      }
+    } catch (e) {
+      // Ignore CORS restrictions on external stylesheets
+    }
+  }
+  
+  return () => {
+    stylesToRestore.forEach(({ sheet, rules }) => {
+      const sorted = [...rules].sort((a, b) => a.index - b.index);
+      sorted.forEach(({ index, cssText }) => {
+        try {
+          sheet.insertRule(cssText, index);
+        } catch (e) {
+          // Ignore insertion errors
+        }
+      });
+    });
+  };
+}
+
 export default function CertificatesListPage() {
   const [certs, setCerts] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,6 +130,7 @@ export default function CertificatesListPage() {
     // Wait for the DOM to update and render the template in offscreen/hidden state
     await new Promise((resolve) => setTimeout(resolve, 300));
 
+    let restoreStyles = () => {};
     try {
       const html2canvas = (await import("html2canvas")).default;
       const { jsPDF } = await import("jspdf");
@@ -84,12 +138,18 @@ export default function CertificatesListPage() {
       const element = document.getElementById("certificate-render-target");
       if (!element) throw new Error("Certificate element not found");
 
+      // Sanitize stylesheets to remove oklch/lab color functions before running html2canvas
+      restoreStyles = sanitizeStylesheets();
+
       const canvas = await html2canvas(element, {
         scale: 2, // High resolution
         useCORS: true,
         allowTaint: true,
         backgroundColor: "#FAF9F5",
       });
+
+      // Restore stylesheets immediately after capture
+      restoreStyles();
 
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
@@ -101,6 +161,7 @@ export default function CertificatesListPage() {
       pdf.addImage(imgData, "PNG", 0, 0, 1120, 792);
       pdf.save(`Certificate_${cert.studentRegnumber}.pdf`);
     } catch (err) {
+      restoreStyles();
       console.error("Error generating single PDF:", err);
       alert("Failed to generate PDF. Please try again.");
     } finally {
@@ -114,6 +175,7 @@ export default function CertificatesListPage() {
     if (selectedIds.length === 0) return;
     setGeneratingPdf(true);
 
+    let restoreStyles = () => {};
     try {
       const html2canvas = (await import("html2canvas")).default;
       const { jsPDF } = await import("jspdf");
@@ -136,12 +198,18 @@ export default function CertificatesListPage() {
         const element = document.getElementById("certificate-render-target");
         if (!element) continue;
 
+        // Sanitize stylesheets to remove oklch/lab color functions before running html2canvas
+        restoreStyles = sanitizeStylesheets();
+
         const canvas = await html2canvas(element, {
           scale: 1.5, // Standard high resolution for multi-page
           useCORS: true,
           allowTaint: true,
           backgroundColor: "#FAF9F5",
         });
+
+        // Restore stylesheets immediately after capture
+        restoreStyles();
 
         const imgData = canvas.toDataURL("image/png");
         
@@ -154,6 +222,7 @@ export default function CertificatesListPage() {
 
       pdf.save(`CTS_Certificates_Bulk.pdf`);
     } catch (err) {
+      restoreStyles();
       console.error("Error generating bulk PDF:", err);
       alert("Failed to generate bulk PDF.");
     } finally {
