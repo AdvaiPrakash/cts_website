@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: #bef264; /* Lime green from screenshot */
+  --color-primary-hover: #a3e635;
+
+  --bg-page: #ffffff;
+  --text-page: #111827;
+  --card-bg: #111827;
+  --card-text: #ffffff;
+  --card-muted: #9ca3af;
+  --cutout-bg: #ffffff;
+  --accent: #bef264;
+  --text-accent-dark: #1e3a1e; /* dark green text for buttons */
+  --border-subtle: rgba(0, 0, 0, 0.08);
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-outfit), var(--font-sans);
+}
+
+@theme {
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-bg-page: var(--bg-page);
+  --color-text-page: var(--text-page);
+  --color-card-bg: var(--card-bg);
+  --color-card-text: var(--card-text);
+  --color-card-muted: var(--card-muted);
+  --color-cutout-bg: var(--cutout-bg);
+  --color-accent: var(--accent);
+  --color-text-accent-dark: var(--text-accent-dark);
+  --color-border-subtle: var(--border-subtle);
+
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-page);
+    color: var(--text-page);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+/* Custom modern web design visual enhancements */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #ffffff 40%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
