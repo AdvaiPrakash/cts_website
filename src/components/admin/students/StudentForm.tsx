@@ -1,8 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { upsertStudentAction } from "@/app/admin/actions";
+
+interface Course {
+  id: string;
+  title: string;
+}
 
 interface StudentFormProps {
   initialData?: {
@@ -20,14 +25,39 @@ export function StudentForm({ initialData }: StudentFormProps) {
   const [email, setEmail] = useState(initialData?.email || "");
   const [phone, setPhone] = useState(initialData?.phone || "");
   const [regnumber, setRegnumber] = useState(initialData?.regnumber || "");
+  
+  // Course completion / auto certificate generation state
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [autoGenerate, setAutoGenerate] = useState(false);
+  const [courseCompletedId, setCourseCompletedId] = useState("");
+  const [grade, setGrade] = useState("A+");
+  const [issueDate, setIssueDate] = useState(new Date().toISOString().split("T")[0]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isNew = !initialData;
 
+  useEffect(() => {
+    // Fetch courses list for auto generation selector
+    fetch("/api/courses")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setCourses(data);
+        }
+      })
+      .catch((err) => console.error("Error loading courses:", err));
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !regnumber.trim()) return;
+
+    if (autoGenerate && !courseCompletedId) {
+      setError("Please select a completed course to generate the certificate.");
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -40,6 +70,10 @@ export function StudentForm({ initialData }: StudentFormProps) {
         phone: phone.trim() || undefined,
         regnumber: regnumber.trim().toUpperCase(),
         isNew,
+        generateCertificate: autoGenerate,
+        courseCompletedId: autoGenerate ? courseCompletedId : undefined,
+        grade: autoGenerate ? grade.trim() : undefined,
+        issueDate: autoGenerate ? issueDate.trim() : undefined,
       });
 
       if (res.error) {
@@ -56,7 +90,7 @@ export function StudentForm({ initialData }: StudentFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white border border-border-subtle rounded-xl p-6 shadow-sm max-w-2xl space-y-6 text-left">
+    <form onSubmit={handleSubmit} className="bg-white border border-border-subtle rounded-xl p-6 shadow-sm max-w-2xl space-y-6 text-left font-sans">
       <h3 className="text-lg font-serif font-medium text-text-page border-b border-border-subtle/50 pb-3">
         {isNew ? "Create New Student Profile" : "Edit Student Profile"}
       </h3>
@@ -129,6 +163,77 @@ export function StudentForm({ initialData }: StudentFormProps) {
               className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-black/[0.01] text-text-page placeholder-text-page/30 focus:outline-none focus:border-primary text-sm font-sans"
             />
           </div>
+        </div>
+
+        {/* Certificate Auto-Generation Section */}
+        <div className="pt-4 border-t border-border-subtle/50 space-y-4">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="autoGenerate"
+              checked={autoGenerate}
+              onChange={(e) => setAutoGenerate(e.target.checked)}
+              className="w-4 h-4 rounded text-primary focus:ring-primary border-border-subtle"
+            />
+            <label htmlFor="autoGenerate" className="text-xs font-bold uppercase tracking-wider text-text-page/80 cursor-pointer">
+              Mark Course as Completed & Auto-Issue Certificate
+            </label>
+          </div>
+
+          {autoGenerate && (
+            <div className="p-4 bg-black/[0.01] border border-border-subtle rounded-lg space-y-4 animate-fade-in">
+              {/* Course selection */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-text-page/60 mb-2">
+                  Select Completed Course *
+                </label>
+                <select
+                  required={autoGenerate}
+                  value={courseCompletedId}
+                  onChange={(e) => setCourseCompletedId(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-white text-text-page focus:outline-none focus:border-primary text-sm font-sans"
+                >
+                  <option value="" disabled>-- Choose a course --</option>
+                  {courses.map((course) => (
+                    <option key={course.id} value={course.id}>
+                      {course.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Date of Completion */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-text-page/60 mb-2">
+                    Date of Issue *
+                  </label>
+                  <input
+                    type="date"
+                    required={autoGenerate}
+                    value={issueDate}
+                    onChange={(e) => setIssueDate(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-white text-text-page focus:outline-none focus:border-primary text-sm font-sans"
+                  />
+                </div>
+
+                {/* Grade */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-text-page/60 mb-2">
+                    Performance Grade *
+                  </label>
+                  <input
+                    type="text"
+                    required={autoGenerate}
+                    placeholder="e.g. A+, A, First Class"
+                    value={grade}
+                    onChange={(e) => setGrade(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-border-subtle bg-white text-text-page placeholder-text-page/30 focus:outline-none focus:border-primary text-sm font-sans"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

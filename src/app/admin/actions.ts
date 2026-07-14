@@ -221,9 +221,13 @@ export async function upsertStudentAction(payload: {
   phone?: string;
   regnumber: string;
   isNew: boolean;
+  courseCompletedId?: string;
+  grade?: string;
+  issueDate?: string;
+  generateCertificate?: boolean;
 }) {
   await requireEditor();
-  const { id, name, email, phone, regnumber, isNew } = payload;
+  const { id, name, email, phone, regnumber, isNew, courseCompletedId, grade, issueDate, generateCertificate } = payload;
 
   if (!name || !regnumber) {
     throw new Error("Name and registration number are required");
@@ -240,10 +244,19 @@ export async function upsertStudentAction(payload: {
         return { error: "A student with this registration number already exists" };
       }
 
-      await db.execute({
+      const insertResult = await db.execute({
         sql: "INSERT INTO students (name, email, phone, regnumber, created_at) VALUES (?, ?, ?, ?, ?)",
         args: [name.trim(), email?.trim() || null, phone?.trim() || null, regnumber.trim().toUpperCase(), new Date().toISOString()],
       });
+      
+      const studentId = Number(insertResult.lastInsertRowid);
+
+      if (generateCertificate && courseCompletedId && grade && issueDate) {
+        await db.execute({
+          sql: "INSERT INTO certificates (student_id, course_id, issue_date, grade, status, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+          args: [studentId, courseCompletedId.trim(), issueDate.trim(), grade.trim(), "Active", new Date().toISOString()],
+        });
+      }
     } else {
       if (!id) throw new Error("ID is required for editing a student");
       // Check duplicate regnumber
@@ -259,6 +272,28 @@ export async function upsertStudentAction(payload: {
         sql: "UPDATE students SET name = ?, email = ?, phone = ?, regnumber = ? WHERE id = ?",
         args: [name.trim(), email?.trim() || null, phone?.trim() || null, regnumber.trim().toUpperCase(), id],
       });
+
+      if (generateCertificate && courseCompletedId && grade && issueDate) {
+        // Check if certificate already exists for this student and course
+        const existingCert = await db.execute({
+          sql: "SELECT id FROM certificates WHERE student_id = ? AND course_id = ?",
+          args: [id, courseCompletedId.trim()],
+        });
+
+        if (existingCert.rows.length === 0) {
+          await db.execute({
+            sql: "INSERT INTO certificates (student_id, course_id, issue_date, grade, status, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+            args: [id, courseCompletedId.trim(), issueDate.trim(), grade.trim(), "Active", new Date().toISOString()],
+          });
+        } else {
+          // Update existing certificate details
+          const certId = Number(existingCert.rows[0].id);
+          await db.execute({
+            sql: "UPDATE certificates SET issue_date = ?, grade = ? WHERE id = ?",
+            args: [issueDate.trim(), grade.trim(), certId],
+          });
+        }
+      }
     }
     return { success: true };
   } catch (error: any) {
