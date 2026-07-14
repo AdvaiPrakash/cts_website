@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ResponsiveTable } from "@/components/admin/ResponsiveTable";
 import { deleteCertificateAction } from "@/app/admin/actions";
@@ -17,57 +17,199 @@ interface Certificate {
   courseTitle: string;
 }
 
-function sanitizeStylesheets() {
-  const stylesToRestore: { sheet: CSSStyleSheet; rules: { index: number; cssText: string }[] }[] = [];
-  
-  if (typeof window === "undefined" || !document.styleSheets) {
-    return () => {};
-  }
-  
-  for (let i = 0; i < document.styleSheets.length; i++) {
-    const sheet = document.styleSheets[i];
-    try {
-      if (!sheet.cssRules) continue;
-      
-      const restoredRules: { index: number; cssText: string }[] = [];
-      const rulesToDelete: number[] = [];
-      
-      for (let j = 0; j < sheet.cssRules.length; j++) {
-        const rule = sheet.cssRules[j];
-        if (
-          rule.cssText.includes("lab(") || 
-          rule.cssText.includes("oklch(") || 
-          rule.cssText.includes("oklab(") || 
-          rule.cssText.includes("lch(")
-        ) {
-          restoredRules.push({ index: j, cssText: rule.cssText });
-          rulesToDelete.push(j);
-        }
-      }
-      
-      if (rulesToDelete.length > 0) {
-        for (let k = rulesToDelete.length - 1; k >= 0; k--) {
-          sheet.deleteRule(rulesToDelete[k]);
-        }
-        stylesToRestore.push({ sheet, rules: restoredRules });
-      }
-    } catch (e) {
-      // Ignore CORS restrictions on external stylesheets
-    }
-  }
-  
-  return () => {
-    stylesToRestore.forEach(({ sheet, rules }) => {
-      const sorted = [...rules].sort((a, b) => a.index - b.index);
-      sorted.forEach(({ index, cssText }) => {
-        try {
-          sheet.insertRule(cssText, index);
-        } catch (e) {
-          // Ignore insertion errors
-        }
-      });
-    });
-  };
+/* ─────────────────────────────────────────────────────────
+ * Pure jsPDF certificate renderer — no html2canvas needed.
+ * Draws directly onto a landscape A4 page so no CSS parsing
+ * issues with oklch / lab color functions.
+ * ────────────────────────────────────────────────────────── */
+async function drawCertificatePage(
+  pdf: import("jspdf").jsPDF,
+  cert: Certificate
+) {
+  const W = pdf.internal.pageSize.getWidth(); // 841.89 pt (A4 landscape)
+  const H = pdf.internal.pageSize.getHeight(); // 595.28 pt
+
+  // ── Background ──
+  pdf.setFillColor(250, 249, 245); // #FAF9F5
+  pdf.rect(0, 0, W, H, "F");
+
+  // ── Outer double-border ──
+  pdf.setDrawColor(4, 30, 23); // #041e17
+  pdf.setLineWidth(3);
+  pdf.rect(18, 18, W - 36, H - 36);
+  pdf.setLineWidth(1);
+  pdf.rect(24, 24, W - 48, H - 48);
+
+  // ── Corner ornaments (small squares) ──
+  const cs = 6;
+  const positions = [
+    [30, 30],
+    [W - 30 - cs, 30],
+    [30, H - 30 - cs],
+    [W - 30 - cs, H - 30 - cs],
+  ];
+  pdf.setFillColor(4, 30, 23);
+  positions.forEach(([x, y]) => pdf.rect(x, y, cs, cs, "F"));
+
+  // ── Inner decorative rule ──
+  pdf.setDrawColor(180, 160, 120); // muted gold
+  pdf.setLineWidth(0.5);
+  pdf.rect(36, 36, W - 72, H - 72);
+
+  // ── Top-left: Register number ──
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(9);
+  pdf.setTextColor(4, 30, 23);
+  pdf.text(`Register No: ${cert.studentRegnumber}`, 50, 55);
+
+  // ── Top-right: Decorative seal circle ──
+  const sealX = W - 75;
+  const sealY = 65;
+  pdf.setDrawColor(70, 130, 180);
+  pdf.setLineWidth(1);
+  pdf.circle(sealX, sealY, 22);
+  pdf.setFontSize(5.5);
+  pdf.setTextColor(70, 130, 180);
+  pdf.setFont("helvetica", "bold");
+  pdf.text("CREATIVE TAX", sealX, sealY - 5, { align: "center" });
+  pdf.text("SOLUTIONS", sealX, sealY, { align: "center" });
+  pdf.text("CERTIFIED", sealX, sealY + 5, { align: "center" });
+
+  // ── Fleur-de-lis accent ──
+  pdf.setFontSize(22);
+  pdf.setTextColor(180, 140, 60);
+  pdf.text("\u2766", W / 2, 95, { align: "center" }); // ❦
+
+  // ── Title: Institution name ──
+  pdf.setFont("times", "bold");
+  pdf.setFontSize(36);
+  pdf.setTextColor(4, 30, 23);
+  pdf.text("CREATIVE TAX SOLUTIONS", W / 2, 130, { align: "center" });
+
+  // ── Affiliation ──
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(8);
+  pdf.setTextColor(80, 80, 80);
+  pdf.text(
+    "Affiliated with Human Resource Development (WHRDE)",
+    W / 2,
+    148,
+    { align: "center" }
+  );
+
+  // ── Thin decorative line ──
+  pdf.setDrawColor(180, 160, 120);
+  pdf.setLineWidth(0.4);
+  pdf.line(W / 2 - 120, 156, W / 2 + 120, 156);
+
+  // ── Section heading ──
+  pdf.setFont("times", "bold");
+  pdf.setFontSize(16);
+  pdf.setTextColor(4, 30, 23);
+  pdf.text("CERTIFICATE OF COMPLETION", W / 2, 178, { align: "center" });
+
+  // ── Thin decorative line ──
+  pdf.line(W / 2 - 100, 185, W / 2 + 100, 185);
+
+  // ── Body text ──
+  const cx = W / 2;
+
+  pdf.setFont("times", "italic");
+  pdf.setFontSize(13);
+  pdf.setTextColor(80, 80, 80);
+  pdf.text("This is to certify that", cx, 215, { align: "center" });
+
+  // ── Student name (prominent) ──
+  pdf.setFont("times", "bolditalic");
+  pdf.setFontSize(30);
+  pdf.setTextColor(4, 30, 23);
+  pdf.text(cert.studentName, cx, 250, { align: "center" });
+
+  // Underline beneath name
+  const nameWidth = pdf.getTextWidth(cert.studentName);
+  pdf.setDrawColor(180, 140, 60);
+  pdf.setLineWidth(0.8);
+  pdf.line(cx - nameWidth / 2, 255, cx + nameWidth / 2, 255);
+
+  // ── Continuation text ──
+  pdf.setFont("times", "italic");
+  pdf.setFontSize(13);
+  pdf.setTextColor(80, 80, 80);
+  pdf.text("has successfully completed the Professional Certification in", cx, 280, {
+    align: "center",
+  });
+
+  // ── Course title ──
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(20);
+  pdf.setTextColor(4, 30, 23);
+  pdf.text(cert.courseTitle.toUpperCase(), cx, 310, { align: "center" });
+
+  // ── Description text ──
+  pdf.setFont("times", "italic");
+  pdf.setFontSize(11);
+  pdf.setTextColor(100, 100, 100);
+  const desc = `having been certified by duly appointed Examiners to be qualified to receive the same, and having been placed in the ${cert.grade} at the examination.`;
+  const lines = pdf.splitTextToSize(desc, 460);
+  pdf.text(lines, cx, 340, { align: "center" });
+
+  // ── Bottom section ──
+
+  // Date of issue (left)
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(7);
+  pdf.setTextColor(130, 130, 130);
+  pdf.text("TRAINING CENTER", 60, H - 100);
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(10);
+  pdf.setTextColor(4, 30, 23);
+  pdf.text("Kochi, Kerala, India", 60, H - 88);
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(7);
+  pdf.setTextColor(130, 130, 130);
+  pdf.text("DATE OF ISSUE", 60, H - 72);
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(10);
+  pdf.setTextColor(4, 30, 23);
+  pdf.text(cert.issueDate, 60, H - 60);
+
+  // Red wax seal (center)
+  const sealCX = cx;
+  const sealCY = H - 80;
+  pdf.setDrawColor(180, 40, 40);
+  pdf.setLineWidth(2);
+  pdf.circle(sealCX, sealCY, 28);
+  pdf.setLineWidth(0.6);
+  pdf.setLineDashPattern([2, 2], 0);
+  pdf.circle(sealCX, sealCY, 22);
+  pdf.setLineDashPattern([], 0);
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(12);
+  pdf.setTextColor(180, 40, 40);
+  pdf.text("CTS", sealCX, sealCY - 5, { align: "center" });
+  pdf.setFontSize(7);
+  pdf.text("CERTIFIED", sealCX, sealCY + 3, { align: "center" });
+  pdf.setFontSize(5);
+  pdf.text("SEAL", sealCX, sealCY + 9, { align: "center" });
+
+  // Director signature (right)
+  const sigX = W - 60;
+  pdf.setDrawColor(180, 180, 180);
+  pdf.setLineWidth(0.5);
+  pdf.line(sigX - 80, H - 95, sigX, H - 95);
+  pdf.setFont("times", "italic");
+  pdf.setFontSize(14);
+  pdf.setTextColor(60, 60, 60);
+  pdf.text("Advai Prakash", sigX - 40, H - 82, { align: "center" });
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(7);
+  pdf.setTextColor(130, 130, 130);
+  pdf.text("DIRECTOR", sigX - 40, H - 72, { align: "center" });
+  pdf.setFontSize(6);
+  pdf.text("Creative Tax Solutions", sigX - 40, H - 64, {
+    align: "center",
+  });
 }
 
 export default function CertificatesListPage() {
@@ -75,8 +217,8 @@ export default function CertificatesListPage() {
   const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [generatingPdf, setGeneratingPdf] = useState(false);
-  const [activeDownloadCert, setActiveDownloadCert] = useState<Certificate | null>(null);
   const [previewCert, setPreviewCert] = useState<Certificate | null>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     fetch("/api/certificates")
@@ -89,6 +231,44 @@ export default function CertificatesListPage() {
       .catch((err) => console.error("Error loading certificates:", err))
       .finally(() => setLoading(false));
   }, []);
+
+  // Render a certificate preview onto a canvas element
+  useEffect(() => {
+    if (!previewCert || !previewCanvasRef.current) return;
+
+    let cancelled = false;
+
+    (async () => {
+      const { jsPDF } = await import("jspdf");
+      const pdf = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+      await drawCertificatePage(pdf, previewCert);
+
+      // Convert first page to data URL for preview
+      const pageData = pdf.output("datauristring");
+
+      // Draw onto canvas using an image
+      const img = new Image();
+      img.onload = () => {
+        if (cancelled || !previewCanvasRef.current) return;
+        const canvas = previewCanvasRef.current;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        // A4 landscape aspect ratio
+        const scale = 2;
+        canvas.width = 842 * scale;
+        canvas.height = 595 * scale;
+        canvas.style.width = "100%";
+        canvas.style.height = "auto";
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      img.src = pageData;
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [previewCert]);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this certificate record?")) return;
@@ -107,130 +287,55 @@ export default function CertificatesListPage() {
   };
 
   const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedIds(certs.map((c) => c.id));
-    } else {
-      setSelectedIds([]);
-    }
+    setSelectedIds(checked ? certs.map((c) => c.id) : []);
   };
 
   const handleSelectOne = (id: number, checked: boolean) => {
-    if (checked) {
-      setSelectedIds((prev) => [...prev, id]);
-    } else {
-      setSelectedIds((prev) => prev.filter((x) => x !== id));
-    }
+    setSelectedIds((prev) =>
+      checked ? [...prev, id] : prev.filter((x) => x !== id)
+    );
   };
 
-  // Function to capture and download a single certificate
+  // ── Download a single certificate as A4 landscape PDF ──
   const triggerSingleDownload = async (cert: Certificate) => {
     setGeneratingPdf(true);
-    setActiveDownloadCert(cert);
-
-    // Wait for the DOM to update and render the template in offscreen/hidden state
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    let restoreStyles = () => {};
     try {
-      const html2canvas = (await import("html2canvas")).default;
       const { jsPDF } = await import("jspdf");
-
-      const element = document.getElementById("certificate-render-target");
-      if (!element) throw new Error("Certificate element not found");
-
-      // Sanitize stylesheets to remove oklch/lab color functions before running html2canvas
-      restoreStyles = sanitizeStylesheets();
-
-      const canvas = await html2canvas(element, {
-        scale: 2, // High resolution
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#FAF9F5",
-      });
-
-      // Restore stylesheets immediately after capture
-      restoreStyles();
-
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({
-        orientation: "landscape",
-        unit: "px",
-        format: [1120, 792],
-      });
-
-      pdf.addImage(imgData, "PNG", 0, 0, 1120, 792);
+      const pdf = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+      await drawCertificatePage(pdf, cert);
       pdf.save(`Certificate_${cert.studentRegnumber}.pdf`);
     } catch (err) {
-      restoreStyles();
-      console.error("Error generating single PDF:", err);
+      console.error("Error generating PDF:", err);
       alert("Failed to generate PDF. Please try again.");
     } finally {
-      setActiveDownloadCert(null);
       setGeneratingPdf(false);
     }
   };
 
-  // Function to download selected certificates in bulk as a single PDF
+  // ── Bulk download selected certificates ──
   const triggerBulkDownload = async () => {
     if (selectedIds.length === 0) return;
     setGeneratingPdf(true);
-
-    let restoreStyles = () => {};
     try {
-      const html2canvas = (await import("html2canvas")).default;
       const { jsPDF } = await import("jspdf");
+      const pdf = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
 
-      const pdf = new jsPDF({
-        orientation: "landscape",
-        unit: "px",
-        format: [1120, 792],
-      });
-
-      const selectedCerts = certs.filter((c) => selectedIds.includes(c.id));
-
-      for (let i = 0; i < selectedCerts.length; i++) {
-        const cert = selectedCerts[i];
-        setActiveDownloadCert(cert);
-
-        // Wait for rendering
-        await new Promise((resolve) => setTimeout(resolve, 200));
-
-        const element = document.getElementById("certificate-render-target");
-        if (!element) continue;
-
-        // Sanitize stylesheets to remove oklch/lab color functions before running html2canvas
-        restoreStyles = sanitizeStylesheets();
-
-        const canvas = await html2canvas(element, {
-          scale: 1.5, // Standard high resolution for multi-page
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: "#FAF9F5",
-        });
-
-        // Restore stylesheets immediately after capture
-        restoreStyles();
-
-        const imgData = canvas.toDataURL("image/png");
-        
-        if (i > 0) {
-          pdf.addPage([1120, 792], "landscape");
-        }
-        
-        pdf.addImage(imgData, "PNG", 0, 0, 1120, 792);
+      const selected = certs.filter((c) => selectedIds.includes(c.id));
+      for (let i = 0; i < selected.length; i++) {
+        if (i > 0) pdf.addPage("a4", "landscape");
+        await drawCertificatePage(pdf, selected[i]);
       }
 
-      pdf.save(`CTS_Certificates_Bulk.pdf`);
+      pdf.save("CTS_Certificates_Bulk.pdf");
     } catch (err) {
-      restoreStyles();
       console.error("Error generating bulk PDF:", err);
       alert("Failed to generate bulk PDF.");
     } finally {
-      setActiveDownloadCert(null);
       setGeneratingPdf(false);
     }
   };
 
+  // ── Table headers ──
   const headers = [
     {
       key: "id" as keyof Certificate,
@@ -248,9 +353,7 @@ export default function CertificatesListPage() {
       key: "studentName" as keyof Certificate,
       label: "Student Name",
       render: (item: Certificate) => (
-        <span className="font-semibold text-text-page">
-          {item.studentName}
-        </span>
+        <span className="font-semibold text-text-page">{item.studentName}</span>
       ),
     },
     {
@@ -265,149 +368,79 @@ export default function CertificatesListPage() {
     { key: "actions" as keyof Certificate, label: "Actions" },
   ];
 
-  // Helper to render certificate inner template
-  const renderCertificateContent = (certItem: Certificate) => {
-    return (
-      <div 
-        id="certificate-render-target" 
-        className="w-[1120px] h-[792px] p-16 bg-[#FAF9F5] border-[16px] border-double border-[#041e17] flex flex-col justify-between relative text-neutral-800 text-left"
-        style={{ fontFamily: "Georgia, serif" }}
-      >
-        {/* Top Border Header Details */}
-        <div className="flex justify-between items-start w-full">
-          <span className="text-sm font-semibold text-[#041e17] tracking-wider">
-            Register No : {certItem.studentRegnumber}
-          </span>
-          {/* Decorative Circle Badge */}
-          <div className="w-16 h-16 rounded-full border border-sky-400 bg-sky-50 opacity-90 flex items-center justify-center text-[7px] text-sky-700 font-bold uppercase text-center p-1 leading-tight shadow-inner">
-            Creative Tax Solutions
-          </div>
-        </div>
-
-        {/* Main Center Content */}
-        <div className="flex flex-col items-center justify-center space-y-6 text-center">
-          {/* Crest / Logo Accent */}
-          <div className="text-amber-500 text-3xl">⚜</div>
-
-          {/* Company Title */}
-          <h1 className="text-5xl font-bold text-[#041e17] uppercase tracking-widest font-serif leading-none">
-            Creative Tax Solutions
-          </h1>
-
-          {/* WHRDE Subtext */}
-          <p className="text-[11px] font-sans tracking-[0.25em] text-[#041e17]/80 uppercase font-semibold">
-            Affiliated with Human Resource Development (WHRDE)
-          </p>
-
-          {/* Title Section */}
-          <h2 className="text-xl font-bold text-[#041e17]/90 tracking-widest uppercase pt-2 pb-4 font-serif">
-            Board of Professional Education
-          </h2>
-
-          {/* Certificate Script Text */}
-          <div className="max-w-3xl space-y-4 text-base leading-relaxed text-neutral-700 italic">
-            <p>This is to certify that</p>
-            <p className="text-3xl font-bold not-italic text-[#041e17] underline decoration-double decoration-amber-500/40 py-1">
-              {certItem.studentName}
-            </p>
-            <p>has been admitted to the Professional Certification in</p>
-            <p className="text-2xl font-bold not-italic font-sans text-[#041e17] uppercase tracking-wide">
-              {certItem.courseTitle}
-            </p>
-            <p className="text-sm max-w-2xl mx-auto">
-              having been certified by duly appointed Examiners to be qualified to receive the same, 
-              and by them placed in the <span className="font-bold not-italic text-[#041e17]">{certItem.grade}</span> at the examination.
-            </p>
-          </div>
-        </div>
-
-        {/* Bottom Signature / Date Area */}
-        <div className="flex justify-between items-end w-full pt-6">
-          {/* Issue Details */}
-          <div className="text-left space-y-1">
-            <p className="text-[10px] text-neutral-500 uppercase tracking-widest">Training Center</p>
-            <p className="text-xs font-semibold text-[#041e17]">Kochi, Kerala, India</p>
-            <p className="text-[10px] text-neutral-500 uppercase tracking-widest pt-2">Date of Issue</p>
-            <p className="text-xs font-semibold text-[#041e17]">{certItem.issueDate}</p>
-          </div>
-
-          {/* Red Wax Seal */}
-          <div className="w-24 h-24 rounded-full border-4 border-red-600/30 flex items-center justify-center p-1 bg-red-500/5 select-none rotate-6">
-            <div className="w-full h-full rounded-full border-2 border-dashed border-red-600 flex flex-col items-center justify-center text-red-600 font-bold uppercase text-[8px] text-center p-0.5 bg-red-500/10">
-              <span>CTS</span>
-              <span className="text-[6px] tracking-wider">CERTIFIED</span>
-              <span className="text-[5px]">SEAL</span>
-            </div>
-          </div>
-
-          {/* Signature Line */}
-          <div className="text-right space-y-1 border-t border-neutral-300 pt-2 w-48">
-            {/* Handwritten script sign */}
-            <p className="text-base font-serif italic text-neutral-700 pr-4 leading-none">Advai Prakash</p>
-            <p className="text-[10px] text-neutral-500 uppercase tracking-wider">Director</p>
-            <p className="text-[8px] text-neutral-400 font-sans tracking-wide">Creative Tax Solutions</p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-6 text-left font-sans relative">
-      
-      {/* Hidden Certificate Target for PDF Render (For Direct Downloads / Bulk) */}
-      {activeDownloadCert && (
-        <div className="absolute top-0 left-0 -z-50 opacity-0 pointer-events-none">
-          {renderCertificateContent(activeDownloadCert)}
-        </div>
-      )}
-
-      {/* Certificate Preview Modal */}
+      {/* ══════════ Preview Modal ══════════ */}
       {previewCert && (
-        <div className="fixed inset-0 z-100 bg-black/80 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
-          <div className="relative bg-[#111827] border border-white/10 rounded-2xl p-6 max-w-6xl w-full flex flex-col space-y-4 max-h-[90vh]">
-            {/* Modal Header */}
-            <div className="flex justify-between items-center text-white pb-3 border-b border-white/10">
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setPreviewCert(null);
+          }}
+        >
+          <div className="relative w-full max-w-5xl bg-[#0f1117] rounded-2xl border border-white/10 shadow-2xl shadow-black/60 overflow-hidden flex flex-col max-h-[95vh]">
+            {/* Modal Toolbar */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.02]">
               <div>
-                <h3 className="text-lg font-serif font-medium">Certificate Preview</h3>
-                <p className="text-[10px] text-white/50">Verify details before downloading</p>
+                <h3 className="text-base font-serif font-medium text-white tracking-wide">
+                  Certificate Preview
+                </h3>
+                <p className="text-[10px] text-white/40 mt-0.5 font-sans">
+                  {previewCert.studentName} — {previewCert.studentRegnumber} — {previewCert.courseTitle}
+                </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => triggerSingleDownload(previewCert)}
                   disabled={generatingPdf}
-                  className="px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-text-accent-dark font-semibold text-xs uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50 border-none"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50 border-none shadow-lg shadow-emerald-500/20"
                 >
-                  {generatingPdf ? "Generating PDF..." : "📥 Download PDF"}
+                  {generatingPdf ? (
+                    <>
+                      <span className="inline-block w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    "⬇ Save as PDF"
+                  )}
                 </button>
                 <button
                   onClick={() => setPreviewCert(null)}
-                  className="px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs uppercase font-semibold cursor-pointer border-none"
+                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/15 text-white/60 hover:text-white flex items-center justify-center cursor-pointer border-none text-lg transition-colors"
                 >
-                  Close
+                  ✕
                 </button>
               </div>
             </div>
 
-            {/* Certificate Display Frame (with responsive scroll) */}
-            <div className="overflow-auto p-4 flex justify-center bg-black/35 rounded-xl border border-white/5 max-h-[70vh]">
-              {/* Renders the actual certificate layout */}
-              <div className="origin-top scale-75 sm:scale-90 md:scale-100 shrink-0">
-                {renderCertificateContent(previewCert)}
+            {/* Certificate Canvas Area */}
+            <div className="flex-1 overflow-auto p-6 sm:p-8 flex items-start justify-center bg-[#080a0e]">
+              <div className="rounded-xl overflow-hidden shadow-2xl shadow-black/50 border border-white/5 bg-[#FAF9F5]">
+                <canvas ref={previewCanvasRef} className="block max-w-full h-auto" />
               </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between px-6 py-3 border-t border-white/10 bg-white/[0.02]">
+              <p className="text-[9px] text-white/30 font-sans">
+                A4 Landscape · 841.89 × 595.28 pt · Professional Certificate
+              </p>
+              <p className="text-[9px] text-white/30 font-sans">
+                Grade: {previewCert.grade} · Issued: {previewCert.issueDate} · Status: {previewCert.status}
+              </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Header */}
+      {/* ══════════ Header ══════════ */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-subtle/50 pb-4 gap-4">
         <div>
           <h2 className="text-xl font-serif font-medium text-text-page">
             Manage Certificates
           </h2>
           <p className="text-[11px] text-text-page/60 font-sans mt-0.5">
-            Issue and manage student certification records. Click Preview to view or download as PDF.
+            Preview, download as PDF, or bulk-export student certificates.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -417,7 +450,7 @@ export default function CertificatesListPage() {
               disabled={generatingPdf}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded bg-primary hover:bg-primary-hover text-text-accent-dark font-bold text-[10px] uppercase tracking-wider transition-all disabled:opacity-50 border-none cursor-pointer"
             >
-              📥 Bulk Download PDF ({selectedIds.length})
+              ⬇ Bulk PDF ({selectedIds.length})
             </button>
           )}
           <Link
@@ -429,7 +462,7 @@ export default function CertificatesListPage() {
         </div>
       </div>
 
-      {/* Select All checkbox bar */}
+      {/* ══════════ Select-All Bar ══════════ */}
       {certs.length > 0 && (
         <div className="flex items-center gap-2 px-6 py-3 bg-black/[0.01] border border-border-subtle rounded-xl text-xs font-semibold text-text-page/70">
           <input
@@ -438,11 +471,11 @@ export default function CertificatesListPage() {
             onChange={(e) => handleSelectAll(e.target.checked)}
             className="w-4 h-4 rounded text-primary focus:ring-primary border-border-subtle cursor-pointer"
           />
-          <span>Select All Certificates for Bulk PDF Download</span>
+          <span>Select All for Bulk Download</span>
         </div>
       )}
 
-      {/* Main List Table */}
+      {/* ══════════ Table ══════════ */}
       {loading ? (
         <div className="flex justify-center items-center h-48">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
@@ -469,15 +502,14 @@ export default function CertificatesListPage() {
                   onClick={() => setPreviewCert(item)}
                   className="px-2.5 py-1.5 rounded bg-black/5 hover:bg-black/10 text-[10px] font-bold uppercase tracking-wider text-text-page transition-colors cursor-pointer border-none"
                 >
-                  👁️ Preview
+                  Preview
                 </button>
                 <button
                   onClick={() => triggerSingleDownload(item)}
                   disabled={generatingPdf}
-                  className="px-2.5 py-1.5 rounded bg-primary/10 hover:bg-primary/20 text-[10px] font-bold uppercase tracking-wider text-[#1e3a1e] transition-colors cursor-pointer border-none disabled:opacity-50"
-                  title="Download Certificate PDF"
+                  className="px-2.5 py-1.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-[10px] font-bold uppercase tracking-wider text-emerald-700 transition-colors cursor-pointer border-none disabled:opacity-50"
                 >
-                  Download PDF
+                  Save as PDF
                 </button>
                 <Link
                   href={`/admin/certificates/${item.id}/edit`}
