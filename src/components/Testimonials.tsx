@@ -42,7 +42,7 @@ export function Testimonials() {
               </div>
               <button
                 onClick={openLeadModal}
-                className="ml-4 px-4 py-2 bg-primary hover:bg-primary-hover text-text-accent-dark font-bold text-xs rounded-lg transition-colors cursor-pointer"
+                className="ml-4 px-4 py-2 bg-[#0f2d1e] text-[#eef3e8] hover:bg-[#0c1f14] font-bold text-xs rounded-lg transition-all cursor-pointer shadow-sm"
               >
                 Read All
               </button>
@@ -54,37 +54,37 @@ export function Testimonials() {
       {/* Infinite Scrolling Marquee container */}
       <div className="relative mt-16 w-full overflow-hidden py-4 select-none">
         {/* Side fade gradients */}
-        <div className="absolute inset-y-0 left-0 w-20 sm:w-32 bg-gradient-to-r from-bg-page to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-20 sm:w-32 bg-gradient-to-l from-bg-page to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-20 sm:w-32 bg-gradient-to-r from-white to-white/0 z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-20 sm:w-32 bg-gradient-to-l from-white to-white/0 z-10 pointer-events-none" />
 
         <div className="animate-marquee gap-6">
           {/* Render duplicated list to loop seamlessly */}
           {[...items, ...items].map((item, idx) => (
             <div
               key={idx}
-              className="w-[320px] sm:w-[380px] flex-shrink-0 p-8 rounded-xl bg-black/[0.01] dark:bg-white/[0.01] border border-border-subtle flex flex-col justify-between h-[360px] hover:shadow-md transition-all duration-300 text-left"
+              className="w-[320px] sm:w-[380px] flex-shrink-0 p-8 rounded-xl bg-[#eef3e8] border border-[#0f2d1e]/10 flex flex-col justify-between h-[360px] hover:shadow-lg transition-all duration-300 text-left"
             >
               {/* Quote Mark & Content */}
               <div className="space-y-6">
                 {/* Huge quote mark */}
-                <span className="text-primary font-serif font-black text-6xl leading-none select-none block h-8">
+                <span className="text-[#0f2d1e]/20 font-serif font-black text-6xl leading-none select-none block h-8">
                   “
                 </span>
-                <p className="text-sm sm:text-base text-text-page/80 leading-relaxed italic whitespace-normal">
+                <p className="text-sm sm:text-base text-[#0f2d1e]/90 leading-relaxed italic whitespace-normal">
                   {item.quote}
                 </p>
               </div>
 
               {/* Profile Details */}
-              <div className="flex items-center gap-3 pt-6 border-t border-border-subtle/40">
-                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center font-display font-bold text-xs text-primary uppercase select-none">
+              <div className="flex items-center gap-3 pt-6 border-t border-[#0f2d1e]/15">
+                <div className="w-8 h-8 rounded-lg bg-[#0f2d1e] flex items-center justify-center font-display font-bold text-xs text-[#eef3e8] uppercase select-none">
                   {item.author[0]}
                 </div>
                 <div>
-                  <h4 className="font-display font-bold text-sm text-text-page leading-tight">
+                  <h4 className="font-display font-bold text-sm text-[#0f2d1e] leading-tight">
                     {item.author}
                   </h4>
-                  <p className="text-[10px] text-text-page/60 font-semibold mt-0.5">
+                  <p className="text-[10px] text-[#0f2d1e]/60 font-semibold mt-0.5">
                     {item.role}
                   </p>
                 </div>

@@ -364,3 +364,17 @@ export async function deleteCertificateAction(id: number) {
     return { error: error.message };
   }
 }
+
+// LEAD (ENQUIRY) DELETE ACTION
+export async function deleteLeadAction(id: number) {
+  await requireEditor();
+  try {
+    await db.execute({
+      sql: "DELETE FROM leads WHERE id = ?",
+      args: [id],
+    });
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}

@@ -132,7 +132,7 @@ export default function FeaturesPage() {
                       {/* Black pill button with arrow circle */}
                       <Link
                         href={course.link}
-                        className="bg-black dark:bg-white hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white dark:text-black font-semibold text-xs py-2 px-3.5 rounded-full flex items-center gap-2 transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 group/btn"
+                        className="bg-black dark:bg-white hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white dark:text-black font-semibold text-xs py-2 px-3.5 rounded-lg flex items-center gap-2 transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 group/btn"
                       >
                         <span>Learn More</span>
                         <span className="w-5 h-5 rounded-full bg-white dark:bg-black text-black dark:text-white flex items-center justify-center font-bold text-[10px] shadow-sm transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5">

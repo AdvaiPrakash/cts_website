@@ -85,13 +85,13 @@ export function Navbar() {
         <div className="flex items-center gap-4 md:gap-6">
           {/* Phone */}
           <a
-            href="tel:1-800-356-8933"
+            href="tel:+919447726158"
             className="hidden lg:flex items-center gap-2 text-sm font-medium text-text-page/90 hover:opacity-80 transition-opacity"
           >
             <svg className="w-4 h-4 text-text-page/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
             </svg>
-            <span>1-800-356-8933</span>
+            <span>+91 9447726158</span>
           </a>
 
           {/* CTA Button */}
@@ -146,7 +146,7 @@ export function Navbar() {
 
             <div className="flex flex-col gap-6 mt-8 pt-8 border-t border-border-subtle/50">
               <a
-                href="tel:1-800-356-8933"
+                href="tel:+919447726158"
                 className="flex items-center gap-3 text-sm font-semibold text-text-page/90 hover:opacity-80 transition-opacity"
               >
                 <div className="p-2.5 rounded-lg bg-neutral-100 text-text-page/60">
@@ -156,7 +156,7 @@ export function Navbar() {
                 </div>
                 <div>
                   <div className="text-[10px] text-text-page/50 font-bold uppercase tracking-wider">Call Us</div>
-                  <span className="text-base font-semibold">1-800-356-8933</span>
+                  <span className="text-base font-semibold">+91 9447726158</span>
                 </div>
               </a>
             </div>

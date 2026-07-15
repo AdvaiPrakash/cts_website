@@ -7,6 +7,7 @@ import { SiteShell } from "@/components/SiteShell";
 import { Reveal } from "@/components/Reveal";
 import { useLead } from "@/lead";
 import Link from "next/link";
+import Image from "next/image";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -60,7 +61,7 @@ export default function CourseDetailPage({ params }: PageProps) {
               <Reveal direction="up">
                 <div className="flex items-center gap-3">
                   {course.badge && (
-                    <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 border border-primary/20 rounded-md">
+                    <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#0f2d1e] bg-[#eef3e8] border border-[#0f2d1e]/15 rounded-md">
                       {course.badge}
                     </span>
                   )}
@@ -85,16 +86,15 @@ export default function CourseDetailPage({ params }: PageProps) {
               {/* Sticky CTAs */}
               <Reveal direction="up" delay={0.15}>
                 <div className="space-y-3 pt-4">
-                  <button
-                    onClick={openLeadModal}
-                    className="w-full py-4 rounded-xl bg-primary hover:bg-primary-hover text-text-accent-dark font-semibold text-sm transition-all hover:scale-102 cursor-pointer shadow-lg shadow-primary/20 border-none flex items-center justify-center gap-2"
+                  <Link
+                    href={`/enroll?course=${course.id}`}
+                    className="w-full py-4 rounded-lg bg-[#0f2d1e] hover:bg-[#0c1f14] dark:bg-primary dark:hover:bg-primary-hover text-[#eef3e8] dark:text-text-accent-dark font-semibold text-sm transition-all hover:scale-102 cursor-pointer shadow-lg shadow-[#0f2d1e]/10 dark:shadow-primary/20 flex items-center justify-center gap-2"
                   >
                     <span>Enroll in Course</span>
-                    <span>→</span>
-                  </button>
+                  </Link>
                   <button
                     onClick={openLeadModal}
-                    className="w-full py-4 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-text-page border border-border-subtle font-semibold text-sm transition-all cursor-pointer flex items-center justify-center"
+                    className="w-full py-4 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-text-page border border-border-subtle font-semibold text-sm transition-all cursor-pointer flex items-center justify-center border-none"
                   >
                     <span>Request Free Callback</span>
                   </button>
@@ -164,7 +164,7 @@ export default function CourseDetailPage({ params }: PageProps) {
               {/* Syllabus Curriculum */}
               <div className="space-y-6 text-left">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-primary">Curriculum</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Curriculum</span>
                   <h2 className="text-2xl sm:text-3xl font-serif font-medium text-text-page mt-2">
                     What You Will Learn
                   </h2>
@@ -172,14 +172,12 @@ export default function CourseDetailPage({ params }: PageProps) {
                     Our structured, industry-standard modules ensure you get hands-on familiarity and clear insight into modern accounting operations.
                   </p>
                 </div>
-
+ 
                 <div className="grid sm:grid-cols-2 gap-4">
                   {course.syllabus.map((topic, idx) => (
                     <Reveal key={idx} direction="up" delay={0.03 * idx}>
-                      <div className="flex items-start gap-3.5 p-4 bg-white dark:bg-[#111827]/5 border border-border-subtle rounded-xl hover:border-primary/40 hover:shadow-sm transition-all duration-300 text-left group">
-                        <span className="flex items-center justify-center w-5.5 h-5.5 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-text-accent-dark transition-colors duration-300">
-                          ✓
-                        </span>
+                      <div className="flex items-start gap-3.5 p-4 bg-white dark:bg-[#111827]/5 border border-border-subtle rounded-xl hover:border-emerald-600/40 hover:shadow-sm transition-all duration-300 text-left group">
+                        <Image src="/check-list.png" alt="Check" width={18} height={18} className="shrink-0 object-contain mt-0.5" />
                         <span className="text-xs sm:text-sm font-medium text-text-page/85 leading-relaxed">
                           {topic}
                         </span>
@@ -190,9 +188,9 @@ export default function CourseDetailPage({ params }: PageProps) {
               </div>
 
               {/* Academy Benefits */}
-              <div className="p-8 sm:p-10 rounded-2xl bg-black/[0.02] dark:bg-white/[0.02] border border-border-subtle text-left space-y-6">
+              <div className="p-8 sm:p-10 rounded-2xl bg-[#eef3e8]/30 dark:bg-white/[0.01] border border-border-subtle text-left space-y-6">
                 <div className="space-y-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-primary">Academy Benefits</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Academy Benefits</span>
                   <h3 className="text-2xl font-serif font-medium text-text-page">
                     Why Study at Creative Tax Solutions?
                   </h3>
@@ -200,20 +198,32 @@ export default function CourseDetailPage({ params }: PageProps) {
                     We bridge the gap between academic education and industry expectations. Our students learn using real accounting ledgers, direct portal filing practices, and standard corporate payroll computations.
                   </p>
                 </div>
-                <ul className="grid sm:grid-cols-2 gap-3 text-xs font-semibold text-text-page/80">
-                  <li className="flex items-center gap-2">🟢 Practical Live-data Practice</li>
-                  <li className="flex items-center gap-2">🟢 Expert Faculty Mentorship</li>
-                  <li className="flex items-center gap-2">🟢 Official Software Certificates</li>
-                  <li className="flex items-center gap-2">🟢 Job Placement Assistance</li>
+                <ul className="grid sm:grid-cols-2 gap-3.5 text-xs font-semibold text-text-page/85">
+                  <li className="flex items-center gap-2.5">
+                    <Image src="/check-list.png" alt="Check" width={14} height={14} className="shrink-0 object-contain" />
+                    <span>Practical Live-data Practice</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Image src="/check-list.png" alt="Check" width={14} height={14} className="shrink-0 object-contain" />
+                    <span>Expert Faculty Mentorship</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Image src="/check-list.png" alt="Check" width={14} height={14} className="shrink-0 object-contain" />
+                    <span>Official Software Certificates</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Image src="/check-list.png" alt="Check" width={14} height={14} className="shrink-0 object-contain" />
+                    <span>Job Placement Assistance</span>
+                  </li>
                 </ul>
                 <div className="pt-4">
-                  <button
-                    onClick={openLeadModal}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4.5 rounded-xl bg-black dark:bg-white text-white dark:text-black font-semibold text-sm transition-all hover:scale-102 cursor-pointer shadow-md"
+                  <Link
+                    href={`/enroll?course=${course.id}`}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg bg-[#0f2d1e] dark:bg-primary text-[#eef3e8] dark:text-text-accent-dark hover:bg-[#0c1f14] dark:hover:bg-primary-hover font-semibold text-sm transition-all hover:scale-102 cursor-pointer shadow-md shadow-[#0f2d1e]/10 dark:shadow-primary/10 flex items-center justify-center"
                   >
                     <span>Book a Seat Now</span>
                     <span>→</span>
-                  </button>
+                  </Link>
                 </div>
               </div>
 

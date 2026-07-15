@@ -42,6 +42,7 @@ export function AdminShell({ user, children }: AdminShellProps) {
     { href: "/admin/gallery", label: "Gallery", icon: "🖼️" },
     { href: "/admin/students", label: "Students", icon: "👥" },
     { href: "/admin/certificates", label: "Certificates", icon: "📜" },
+    { href: "/admin/enquiries", label: "Enquiries", icon: "✉️" },
   ];
 
   return (

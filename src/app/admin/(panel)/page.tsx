@@ -13,6 +13,7 @@ export default async function AdminDashboardOverview() {
   let galleryCount = 0;
   let studentsCount = 0;
   let certsCount = 0;
+  let leadsCount = 0;
 
   try {
     const courseRes = await db.execute("SELECT COUNT(*) as count FROM courses");
@@ -26,6 +27,9 @@ export default async function AdminDashboardOverview() {
 
     const certRes = await db.execute("SELECT COUNT(*) as count FROM certificates");
     certsCount = Number(certRes.rows[0].count);
+
+    const leadRes = await db.execute("SELECT COUNT(*) as count FROM leads");
+    leadsCount = Number(leadRes.rows[0].count);
   } catch (error) {
     console.error("Dashboard count queries failed, utilizing fallback counts:", error);
   }
@@ -35,6 +39,7 @@ export default async function AdminDashboardOverview() {
     { label: "Gallery Photos", val: galleryCount, desc: "Bento grid photo items", href: "/admin/gallery" },
     { label: "Enrolled Students", val: studentsCount, desc: "Profiles and registration numbers", href: "/admin/students" },
     { label: "Certificates Issued", val: certsCount, desc: "Issued course certificates", href: "/admin/certificates" },
+    { label: "Enquiries Received", val: leadsCount, desc: "Form submissions & leads", href: "/admin/enquiries" },
   ];
 
   return (

@@ -48,15 +48,15 @@ export function Footer() {
         {/* Center-Right Column (Contact Info) */}
         <div className="md:col-span-3 space-y-4">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-primary">
-            Contact
+            Head Office
           </h4>
-          <p className="text-xs text-white/60 leading-relaxed">
-            Seventh Ave, 20th Floor,<br />
-            New York, NY 10018
+          <p className="text-xs text-white/60 leading-relaxed uppercase">
+            JANATHA ROAD, LANE NO 40,<br />
+            VYTTILA, KOCHI, KERALA 682019
           </p>
           <div className="space-y-1 text-xs text-white/60">
-            <p>P: 1-800-356-8933</p>
-            <p>E: info@cts-tax.com</p>
+            <p>P: +91 9447726158</p>
+            <p>E: creativetaxsolutionsekm@gmail.com</p>
           </div>
         </div>
 

@@ -236,7 +236,7 @@ export default function GalleryPage() {
                     setActiveCategory(category);
                     setActiveImageId(null);
                   }}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 cursor-pointer ${
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold tracking-wider transition-all duration-300 cursor-pointer ${
                     activeCategory === category
                       ? "bg-black text-white dark:bg-white dark:text-black shadow-sm"
                       : "bg-black/5 dark:bg-white/5 text-text-page/60 hover:text-text-page hover:bg-black/[0.08]"

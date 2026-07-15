@@ -41,7 +41,7 @@ export function ContactCTA() {
           <div className="flex items-center gap-6">
             <button
               onClick={openLeadModal}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary hover:bg-primary-hover text-text-accent-dark font-semibold text-sm transition-all hover:scale-102 cursor-pointer shadow-lg shadow-primary/20"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-primary hover:bg-primary-hover text-text-accent-dark font-semibold text-sm transition-all hover:scale-102 cursor-pointer shadow-lg shadow-primary/20"
             >
               <span>Schedule a Consultation</span>
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

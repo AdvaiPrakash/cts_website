@@ -8,9 +8,10 @@ import { submitLeadAction } from "@/app/actions/submit-lead";
 
 export function LeadModal() {
   const { isOpen, closeLeadModal } = useLead();
-  const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [query, setQuery] = useState("");
   const [company, setCompany] = useState(""); // Honeypot spam blocker
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,10 @@ export function LeadModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !name) return;
+    if (!name || !email) {
+      setError("Name and Email are required.");
+      return;
+    }
     setLoading(true);
     setError(null);
 
@@ -28,7 +32,7 @@ export function LeadModal() {
         email,
         phone,
         company,
-        source: "homepage-lead-modal",
+        source: query.trim() ? `free-consultation: ${query.trim()}` : "free-consultation",
       });
 
       if (res.error) {
@@ -48,6 +52,7 @@ export function LeadModal() {
     setName("");
     setEmail("");
     setPhone("");
+    setQuery("");
     setCompany("");
     setError(null);
     closeLeadModal();
@@ -125,8 +130,8 @@ export function LeadModal() {
                   />
 
                   <div>
-                    <label className="block text-xs font-medium text-text-page/50 uppercase tracking-wider mb-2">
-                      Full Name *
+                    <label className="block text-xs font-semibold text-text-page/60 uppercase tracking-wider mb-2">
+                      Your Name *
                     </label>
                     <input
                       type="text"
@@ -134,12 +139,25 @@ export function LeadModal() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="John Doe"
-                      className="w-full px-4 py-3 rounded-lg bg-black/[0.02] border border-border-subtle text-text-page placeholder-text-page/30 focus:outline-none focus:border-primary transition-colors text-sm font-sans"
+                      className="w-full px-4 py-3 rounded-lg bg-black/[0.02] border border-border-subtle text-text-page placeholder-text-page/30 focus:outline-none focus:border-[#0f2d1e] transition-colors text-sm font-sans"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-text-page/50 uppercase tracking-wider mb-2">
+                    <label className="block text-xs font-semibold text-text-page/60 uppercase tracking-wider mb-2">
+                      Phone Number (Optional)
+                    </label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+91 94477 26158"
+                      className="w-full px-4 py-3 rounded-lg bg-black/[0.02] border border-border-subtle text-text-page placeholder-text-page/30 focus:outline-none focus:border-[#0f2d1e] transition-colors text-sm font-sans"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-text-page/60 uppercase tracking-wider mb-2">
                       Email Address *
                     </label>
                     <input
@@ -147,21 +165,21 @@ export function LeadModal() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="john@company.com"
-                      className="w-full px-4 py-3 rounded-lg bg-black/[0.02] border border-border-subtle text-text-page placeholder-text-page/30 focus:outline-none focus:border-primary transition-colors text-sm font-sans"
+                      placeholder="john@example.com"
+                      className="w-full px-4 py-3 rounded-lg bg-black/[0.02] border border-border-subtle text-text-page placeholder-text-page/30 focus:outline-none focus:border-[#0f2d1e] transition-colors text-sm font-sans"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-text-page/50 uppercase tracking-wider mb-2">
-                      Phone Number (Optional)
+                    <label className="block text-xs font-semibold text-text-page/60 uppercase tracking-wider mb-2">
+                      Message / Query
                     </label>
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+91 98765 43210"
-                      className="w-full px-4 py-3 rounded-lg bg-black/[0.02] border border-border-subtle text-text-page placeholder-text-page/30 focus:outline-none focus:border-primary transition-colors text-sm font-sans"
+                    <textarea
+                      rows={3}
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="How can we assist you with our services?"
+                      className="w-full px-4 py-3 rounded-lg bg-black/[0.02] border border-border-subtle text-text-page placeholder-text-page/30 focus:outline-none focus:border-[#0f2d1e] transition-colors text-sm font-sans resize-none"
                     />
                   </div>
                 </div>
@@ -169,12 +187,12 @@ export function LeadModal() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 rounded-lg bg-primary hover:bg-primary-hover text-text-accent-dark font-semibold text-sm transition-all shadow-lg hover:shadow-primary/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 border-none"
+                  className="w-full py-3.5 rounded-lg bg-[#0f2d1e] hover:bg-[#0c1f14] dark:bg-primary dark:hover:bg-primary-hover text-[#eef3e8] dark:text-text-accent-dark font-semibold text-sm transition-all shadow-md cursor-pointer disabled:opacity-50 border-none flex items-center justify-center gap-2"
                 >
                   {loading ? (
-                    <span className="w-5 h-5 border-2 border-text-accent-dark border-t-transparent rounded-full animate-spin" />
+                    <span className="w-5 h-5 border-2 border-white dark:border-text-accent-dark border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    "Request Strategy Call"
+                    "Submit Request"
                   )}
                 </button>
               </form>
@@ -184,30 +202,18 @@ export function LeadModal() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center py-6 space-y-4"
               >
-                <div className="mx-auto w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
+                <div className="mx-auto w-12 h-12 rounded-lg bg-[#eef3e8] border border-[#0f2d1e]/15 text-[#0f2d1e] flex items-center justify-center text-xl">
+                  ✓
                 </div>
                 <h3 className="text-xl font-display font-semibold text-text-page">
                   Request Received
                 </h3>
                 <p className="text-sm text-text-page/60 px-4">
-                  Thank you, <span className="text-text-page font-medium">{name}</span>. We've received your request and will contact you at <span className="text-text-page font-medium">{email}</span> within 24 hours.
+                  Thank you, <span className="text-text-page font-medium">{name}</span>. We've received your inquiry and our team will contact you shortly.
                 </p>
                 <button
                   onClick={handleClose}
-                  className="mt-4 px-6 py-2 rounded-lg border border-border-subtle hover:bg-black/5 text-text-page text-sm transition-colors cursor-pointer bg-transparent"
+                  className="mt-4 px-6 py-2 rounded-lg bg-[#0f2d1e] text-[#eef3e8] hover:bg-[#0c1f14] text-xs font-semibold transition-colors cursor-pointer border-none"
                 >
                   Close
                 </button>

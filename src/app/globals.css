@@ -16,6 +16,7 @@
 
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-display: var(--font-outfit), var(--font-sans);
+  --font-serif: var(--font-playfair), Georgia, serif;
 }
 
 @theme {
@@ -33,6 +34,7 @@
 
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
+  --font-serif: var(--font-serif);
 }
 
 @layer base {
@@ -82,5 +84,16 @@
 
 .animate-fade-in {
   animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 

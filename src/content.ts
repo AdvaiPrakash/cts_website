@@ -190,25 +190,25 @@ export const CONTENT: SiteContent = {
       {
         id: "accounting",
         title: "Practical Accounting",
-        description: "Those who wish to start their career as Accountant.",
+        description: "Hands-on training in financial record-keeping, double-entry bookkeeping, ledger management, and financial statement finalization.",
         checklist: ["Start career as Accountant", "Hands-on data entry", "Real ledger management"],
       },
       {
         id: "career",
         title: "Career",
-        description: "GST Practitioner, TAX Practitioner, Consultant",
+        description: "Pathway to becoming a certified GST practitioner, tax consultant, or independent accountant with high industry demand.",
         checklist: ["GST Practitioner path", "TAX Consultant roadmap", "Professional certification"],
       },
       {
         id: "filing",
         title: "Filing",
-        description: "GST, IT and all other Statutory online filings",
+        description: "Comprehensive learning of e-filing statutory returns including GST, Income Tax, TDS, PF, and ESI compliance.",
         checklist: ["GST online return filing", "Income Tax (IT) e-filing", "Statutory audit compliance"],
       },
       {
         id: "gst-rules",
         title: "GST ACT And Rules",
-        description: "Practitioners, Consultants, Businessmen to know more about GST and its updations",
+        description: "In-depth section-wise analysis of GST regulations, legal frameworks, and regular statutory updates for practitioners.",
         checklist: ["GST Act fundamentals", "Latest legal updates", "Business tax strategies"],
       },
     ],
@@ -217,7 +217,7 @@ export const CONTENT: SiteContent = {
   courses: {
     badge: "Our Services",
     title: "Our Courses",
-    subtitle: "We tailor workflows to meet each client's needs, leveraging top accounting technology for seamless and efficient bookkeeping. We serve clients in various industries, including hospitality, nightlife, real estate, legal, and medical.",
+    subtitle: "Bridge the gap between academic education and industry requirements. Explore our hands-on, practical certification courses in Accounting, GST, Income Tax, Corporate Audits, and ERP systems led by seasoned practitioners.",
     items: [
       {
         id: "gst-taxation",

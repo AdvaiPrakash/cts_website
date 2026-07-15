@@ -30,7 +30,7 @@ export function Worksheets() {
           <Reveal direction="left" delay={0.2}>
             <button
               onClick={openLeadModal}
-              className="inline-flex items-center gap-1.5 px-6 py-3 rounded-full bg-primary hover:bg-primary-hover text-text-accent-dark font-semibold text-sm transition-all hover:scale-102 cursor-pointer shadow-md shadow-primary/10"
+              className="inline-flex items-center gap-1.5 px-6 py-3 rounded-lg bg-primary hover:bg-primary-hover text-text-accent-dark font-semibold text-sm transition-all hover:scale-102 cursor-pointer shadow-md shadow-primary/10"
             >
               <span>View More</span>
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
