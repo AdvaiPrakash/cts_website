@@ -30,28 +30,24 @@ export default function AboutPage() {
 
   return (
     <SiteShell>
-      {/* Section Header: Elegant Editorial Layout */}
-      <section className="relative w-full pt-40 pb-16 px-6 bg-[#f4f6f3] border-b border-border-subtle transition-colors duration-300">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
-          <div className="lg:col-span-7 flex flex-col items-start gap-4">
-            <Reveal direction="down">
-              <span className="inline-block px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-700 bg-white border border-black/5 rounded-md shadow-sm">
-                ABOUT US
-              </span>
-            </Reveal>
-            <Reveal direction="up">
-              <h1 className="text-4xl sm:text-5xl md:text-[3.75rem] font-serif font-normal tracking-tight text-gray-900 leading-[1.1]">
-                Creative Tax Solutions
-              </h1>
-            </Reveal>
-          </div>
-          <div className="lg:col-span-5 lg:pt-8 text-left">
-            <Reveal direction="up" delay={0.15}>
-              <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-normal">
-                A team of experienced professionals specializing in Accounting, GST, and Income Tax. We are committed to guiding and transforming ambitions into successful careers.
-              </p>
-            </Reveal>
-          </div>
+      {/* Section Header */}
+      <section className="relative w-full pt-36 pb-16 px-6 bg-black/[0.01] dark:bg-white/[0.01] border-b border-border-subtle">
+        <div className="max-w-7xl mx-auto text-left space-y-4">
+          <Reveal direction="down">
+            <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-text-page/60 bg-black/5 dark:bg-white/5 border border-border-subtle rounded-md">
+              ABOUT US
+            </span>
+          </Reveal>
+          <Reveal direction="up">
+            <h1 className="text-4xl sm:text-5xl md:text-[3.25rem] font-serif font-medium tracking-tight text-text-page leading-tight">
+              About Us
+            </h1>
+          </Reveal>
+          <Reveal direction="up" delay={0.15}>
+            <p className="text-sm sm:text-base text-text-page/70 max-w-2xl leading-relaxed">
+              Creative Tax Solutions is a team of experienced professionals specializing in Accounting, GST, and Income Tax. We are committed to guiding and transforming ambitions into successful careers.
+            </p>
+          </Reveal>
         </div>
       </section>
 
