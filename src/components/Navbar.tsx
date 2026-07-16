@@ -49,20 +49,34 @@ export function Navbar() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled || isMenuOpen
-          ? "bg-white/90 backdrop-blur-md border-b border-border-subtle/50 shadow-sm"
-          : "bg-bg-page border-b border-border-subtle"
+        isScrolled
+          ? "bg-transparent border-none shadow-none md:bg-white/90 md:backdrop-blur-md md:border-b md:border-border-subtle/50 md:shadow-sm"
+          : isMenuOpen
+            ? "bg-white/90 backdrop-blur-md border-b border-border-subtle/50 shadow-sm"
+            : "bg-transparent border-none shadow-none md:bg-bg-page md:border-b md:border-border-subtle"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center group" onClick={() => setIsMenuOpen(false)}>
-          <div className="relative h-9 w-12">
+        <Link
+          href="/"
+          className={`flex items-center group transition-all duration-500 transform ${
+            isScrolled
+              ? "opacity-0 scale-75 -translate-y-12 pointer-events-none"
+              : "opacity-100 scale-100 translate-y-0"
+          }`}
+          onClick={() => setIsMenuOpen(false)}
+        >
+          <div className="relative h-[38px] w-[50px] md:h-9 md:w-12 transition-all duration-500">
             <Image
               src="/logo.webp"
               alt={CONTENT.brand.logoText}
               fill
-              className="object-contain brightness-0"
+              className={`object-contain transition-all duration-300 ${
+                isMenuOpen
+                  ? "brightness-0"
+                  : "brightness-0 invert md:brightness-0"
+              }`}
               priority
             />
           </div>
@@ -111,7 +125,11 @@ export function Navbar() {
           {/* Hamburger Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-lg text-text-page hover:bg-black/5 transition-colors focus:outline-none cursor-pointer"
+            className={`md:hidden p-2 rounded-lg transition-colors focus:outline-none cursor-pointer ${
+              isMenuOpen
+                ? "text-gray-900 hover:bg-black/5"
+                : "text-white md:text-text-page hover:bg-white/10"
+            }`}
             aria-label="Toggle menu"
           >
             {isMenuOpen ? (
