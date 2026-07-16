@@ -214,7 +214,7 @@ export function Courses() {
                   onDragStart={() => {
                     isDragging.current = true;
                   }}
-                  onDragEnd={(e, info) => {
+                  onDragEnd={(_, info) => {
                     setTimeout(() => {
                       isDragging.current = false;
                     }, 100);
