@@ -66,12 +66,12 @@ export function Navbar() {
         : "logo-green-filter";
 
   const hamburgerColorClass = isMenuOpen
-    ? "text-gray-900 hover:bg-black/5"
+    ? "text-gray-900 bg-transparent hover:bg-black/5 rounded-full"
     : isScrolled
-      ? "text-text-page hover:bg-black/5"
+      ? "text-[#0f2d1e] bg-[#bef264] shadow-md rounded-full scale-100 hover:scale-105"
       : isHomepage
-        ? "text-white hover:bg-white/10"
-        : "text-text-page hover:bg-black/5";
+        ? "text-white bg-transparent hover:bg-white/10 rounded-full"
+        : "text-text-page bg-transparent hover:bg-black/5 rounded-full";
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${headerBgClass}`}>
@@ -79,7 +79,9 @@ export function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className={`flex items-center group transition-all duration-500 transform ${
+          className={`group transition-all duration-500 transform ${
+            !isHomepage ? "hidden md:flex" : "flex"
+          } items-center ${
             isScrolled
               ? "opacity-0 scale-75 -translate-y-12 pointer-events-none"
               : "opacity-100 scale-100 translate-y-0"
@@ -140,7 +142,7 @@ export function Navbar() {
           {/* Hamburger Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`md:hidden p-2 rounded-lg transition-colors focus:outline-none cursor-pointer ${hamburgerColorClass}`}
+            className={`md:hidden p-2.5 transition-all duration-300 focus:outline-none cursor-pointer ${hamburgerColorClass}`}
             aria-label="Toggle menu"
           >
             {isMenuOpen ? (

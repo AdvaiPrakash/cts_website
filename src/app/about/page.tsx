@@ -30,7 +30,7 @@ export default function AboutPage() {
   return (
     <SiteShell>
       {/* Section Header */}
-      <section className="relative w-full pt-36 pb-16 px-6 bg-black/[0.01] dark:bg-white/[0.01] border-b border-border-subtle">
+      <section className="relative w-full pt-20 sm:pt-28 md:pt-36 pb-16 px-6 bg-black/[0.01] dark:bg-white/[0.01] border-b border-border-subtle">
         <div className="max-w-7xl mx-auto text-left space-y-4">
           <Reveal direction="down">
             <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-text-page/60 bg-black/5 dark:bg-white/5 border border-border-subtle rounded-md">
