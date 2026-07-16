@@ -42,7 +42,7 @@ export default function CourseDetailPage({ params }: PageProps) {
           
           {/* Back Navigation */}
           <div className="mb-8">
-            <Reveal direction="down">
+            <Reveal direction="down" instant>
               <Link
                 href="/features"
                 className="inline-flex items-center gap-2 text-sm text-text-page/60 hover:text-text-page font-semibold transition-colors group cursor-pointer"
@@ -58,7 +58,7 @@ export default function CourseDetailPage({ params }: PageProps) {
             
             {/* Left Column: Sticky Course Header & CTAs */}
             <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-6 text-left">
-              <Reveal direction="up">
+              <Reveal direction="up" instant>
                 <div className="flex items-center gap-3">
                   {course.badge && (
                     <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#0f2d1e] bg-[#eef3e8] border border-[#0f2d1e]/15 rounded-md">
@@ -71,13 +71,13 @@ export default function CourseDetailPage({ params }: PageProps) {
                 </div>
               </Reveal>
 
-              <Reveal direction="up" delay={0.05}>
+              <Reveal direction="up" delay={0.05} instant>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium tracking-tight text-text-page leading-tight">
                   {course.title}
                 </h1>
               </Reveal>
 
-              <Reveal direction="up" delay={0.1}>
+              <Reveal direction="up" delay={0.1} instant>
                 <p className="text-base text-text-page/75 leading-relaxed font-sans">
                   {course.description}
                 </p>
