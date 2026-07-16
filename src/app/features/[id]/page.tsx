@@ -37,7 +37,7 @@ export default function CourseDetailPage({ params }: PageProps) {
 
   return (
     <SiteShell>
-      <div className="bg-bg-page min-h-screen pt-20 sm:pt-26 md:pt-32 pb-24 px-6">
+      <div className="bg-bg-page min-h-screen pt-16 sm:pt-26 md:pt-32 pb-24 px-6">
         <div className="max-w-7xl mx-auto">
           
           {/* Back Navigation */}

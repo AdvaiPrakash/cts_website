@@ -157,7 +157,7 @@ Submitted from website enrollment page.`;
 
   return (
     <SiteShell>
-      <section className="relative min-h-screen pt-20 sm:pt-28 md:pt-36 px-6 pb-24 bg-bg-page transition-colors duration-300">
+      <section className="relative min-h-screen pt-16 sm:pt-28 md:pt-36 px-6 pb-24 bg-bg-page transition-colors duration-300">
         <div className="max-w-7xl mx-auto relative z-10">
           
           {/* Main Layout Grid */}

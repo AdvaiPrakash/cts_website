@@ -80,8 +80,8 @@ export function Navbar() {
         <Link
           href="/"
           className={`group transition-all duration-500 transform ${
-            !isHomepage ? "hidden md:flex" : "flex"
-          } items-center ${
+            !isHomepage ? "invisible md:visible" : "visible"
+          } flex items-center ${
             isScrolled
               ? "opacity-0 scale-75 -translate-y-12 pointer-events-none"
               : "opacity-100 scale-100 translate-y-0"
