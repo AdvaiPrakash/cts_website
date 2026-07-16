@@ -74,8 +74,8 @@ export function Navbar() {
               fill
               className={`object-contain transition-all duration-300 ${
                 isMenuOpen
-                  ? "brightness-0"
-                  : "brightness-0 invert md:brightness-0"
+                  ? "brightness-0 md:logo-green-filter"
+                  : "brightness-0 invert md:logo-green-filter"
               }`}
               priority
             />

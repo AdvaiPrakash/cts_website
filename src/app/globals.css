@@ -97,3 +97,8 @@
   scrollbar-width: none;  /* Firefox */
 }
 
+/* Brand green filter for logo */
+.logo-green-filter {
+  filter: brightness(0) saturate(100%) invert(10%) sepia(45%) saturate(1637%) hue-rotate(119deg) brightness(94%) contrast(102%);
+}
+
