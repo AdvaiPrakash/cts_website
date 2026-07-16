@@ -1,12 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { CONTENT } from "@/content";
 import { useLead } from "@/lead";
 
 export function Navbar() {
+  const pathname = usePathname();
+  const isHomepage = pathname === "/";
   const { openLeadModal } = useLead();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,16 +49,32 @@ export function Navbar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const headerBgClass = isMenuOpen
+    ? "bg-white/90 backdrop-blur-md border-b border-border-subtle/50 shadow-sm"
+    : isScrolled
+      ? "bg-white/90 backdrop-blur-md border-b border-border-subtle/50 shadow-sm"
+      : isHomepage
+        ? "bg-transparent border-none shadow-none md:bg-bg-page md:border-b md:border-border-subtle"
+        : "bg-bg-page border-b border-border-subtle";
+
+  const logoFilterClass = isMenuOpen
+    ? "brightness-0 md:logo-green-filter"
+    : isScrolled
+      ? "brightness-0 md:logo-green-filter"
+      : isHomepage
+        ? "brightness-0 invert md:logo-green-filter"
+        : "logo-green-filter";
+
+  const hamburgerColorClass = isMenuOpen
+    ? "text-gray-900 hover:bg-black/5"
+    : isScrolled
+      ? "text-text-page hover:bg-black/5"
+      : isHomepage
+        ? "text-white hover:bg-white/10"
+        : "text-text-page hover:bg-black/5";
+
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-transparent border-none shadow-none md:bg-white/90 md:backdrop-blur-md md:border-b md:border-border-subtle/50 md:shadow-sm"
-          : isMenuOpen
-            ? "bg-white/90 backdrop-blur-md border-b border-border-subtle/50 shadow-sm"
-            : "bg-transparent border-none shadow-none md:bg-bg-page md:border-b md:border-border-subtle"
-      }`}
-    >
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${headerBgClass}`}>
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link
@@ -72,11 +91,7 @@ export function Navbar() {
               src="/logo.webp"
               alt={CONTENT.brand.logoText}
               fill
-              className={`object-contain transition-all duration-300 ${
-                isMenuOpen
-                  ? "brightness-0 md:logo-green-filter"
-                  : "brightness-0 invert md:logo-green-filter"
-              }`}
+              className={`object-contain transition-all duration-300 ${logoFilterClass}`}
               priority
             />
           </div>
@@ -125,11 +140,7 @@ export function Navbar() {
           {/* Hamburger Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`md:hidden p-2 rounded-lg transition-colors focus:outline-none cursor-pointer ${
-              isMenuOpen
-                ? "text-gray-900 hover:bg-black/5"
-                : "text-white md:text-text-page hover:bg-white/10"
-            }`}
+            className={`md:hidden p-2 rounded-lg transition-colors focus:outline-none cursor-pointer ${hamburgerColorClass}`}
             aria-label="Toggle menu"
           >
             {isMenuOpen ? (
