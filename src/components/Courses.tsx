@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { CONTENT } from "@/content";
@@ -29,6 +29,7 @@ export function Courses() {
   const { badge, title, subtitle, items: staticItems } = CONTENT.courses;
   const [items, setItems] = useState(staticItems);
   const [activeIndex, setActiveIndex] = useState(0);
+  const isDragging = useRef(false);
   
   const { width } = useWindowSize();
   const isMobile = width < 640;
@@ -80,6 +81,10 @@ export function Courses() {
   };
 
   const handleCardClick = (e: React.MouseEvent, index: number) => {
+    if (isDragging.current) {
+      e.preventDefault();
+      return;
+    }
     // If clicking an inactive side card, expand it instead of navigating
     if (index !== activeIndex) {
       e.preventDefault();
@@ -203,7 +208,24 @@ export function Courses() {
                     stiffness: 260,
                     damping: 28
                   }}
-                  className="absolute w-[240px] sm:w-[350px] h-[300px] sm:h-[440px] overflow-hidden shadow-lg select-none cursor-pointer group"
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.6}
+                  onDragStart={() => {
+                    isDragging.current = true;
+                  }}
+                  onDragEnd={(e, info) => {
+                    setTimeout(() => {
+                      isDragging.current = false;
+                    }, 100);
+                    const swipeThreshold = 50;
+                    if (info.offset.x < -swipeThreshold) {
+                      handleNext();
+                    } else if (info.offset.x > swipeThreshold) {
+                      handlePrev();
+                    }
+                  }}
+                  className="absolute w-[240px] sm:w-[350px] h-[300px] sm:h-[440px] overflow-hidden shadow-lg select-none cursor-pointer group active:cursor-grabbing"
                   style={{ backgroundColor: bgHex }}
                 >
                   <Link
