@@ -28,6 +28,12 @@ export function Hero() {
       <div className="relative max-w-7xl mx-auto w-full z-10 grid md:grid-cols-12 gap-8 items-end">
         {/* Left Column (Heading, Subtitle and CTAs) */}
         <div className="md:col-span-7 space-y-6 text-left">
+          <Reveal direction="down" delay={0.05}>
+            <span className="inline-block px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-[#bef264] bg-white/10 backdrop-blur-md border border-[#bef264]/20 rounded-md">
+              {CONTENT.hero.badge}
+            </span>
+          </Reveal>
+
           <Reveal direction="up" delay={0.1}>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-medium tracking-tight text-white leading-[1.15]">
               {CONTENT.hero.title}

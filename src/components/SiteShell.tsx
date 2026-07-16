@@ -46,16 +46,22 @@ export function SiteShell({ children }: SiteShellProps) {
           href="https://wa.me/919447726158"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-12 h-12 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 pointer-events-auto cursor-pointer"
+          className="w-12 h-12 rounded-lg bg-[#0f2d1e] hover:bg-[#0c1f14] text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 pointer-events-auto cursor-pointer border border-white/10"
           aria-label="Chat on WhatsApp"
         >
-          <Image src="/whatsapp.png" alt="WhatsApp" width={28} height={28} className="object-contain" />
+          <Image 
+            src="/whatsapp.png" 
+            alt="WhatsApp" 
+            width={28} 
+            height={28} 
+            className="object-contain brightness-0 invert" 
+          />
         </a>
 
         {/* Apply Now Portal Button */}
         <a
           href="/enroll"
-          className="px-5 py-3 rounded-lg bg-[#0f2d1e] text-[#eef3e8] hover:bg-[#0c1f14] text-xs font-bold uppercase tracking-wider shadow-lg transition-all hover:scale-105 pointer-events-auto cursor-pointer flex items-center gap-2"
+          className="px-5 py-3 rounded-lg bg-[#bef264] text-gray-950 hover:bg-[#a6d84f] text-xs font-bold uppercase tracking-wider shadow-lg transition-all hover:scale-105 pointer-events-auto cursor-pointer flex items-center gap-2"
         >
           <span>🎓 Apply Now</span>
         </a>

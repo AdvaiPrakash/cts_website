@@ -170,7 +170,7 @@ export const CONTENT: SiteContent = {
     { label: "Contact", href: "/contact" },
   ],
   hero: {
-    badge: "Professional Training Academy",
+    badge: "Welcome to Creative Tax Solutions",
     title: "Become a Job-Ready Accounting Professional",
     subtitle: "Practical training in Accounting, GST, Income Tax, Tally Prime, SAP, and Business Compliance.",
     primaryCta: "View Courses",
