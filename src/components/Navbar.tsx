@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { CONTENT } from "@/content";
+import { useLead } from "@/lead";
 
 export function Navbar() {
+  const { openLeadModal } = useLead();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -93,16 +95,18 @@ export function Navbar() {
           </a>
 
           {/* CTA Button (Hidden on mobile) */}
-          <Link
-            href="/enroll"
-            onClick={() => setIsMenuOpen(false)}
+          <button
+            onClick={() => {
+              setIsMenuOpen(false);
+              openLeadModal();
+            }}
             className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-text-accent-dark font-semibold text-xs tracking-wider transition-colors shadow-sm cursor-pointer"
           >
-            <span>Apply Now</span>
+            <span>Free Consultation</span>
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
-          </Link>
+          </button>
 
           {/* Hamburger Menu Button */}
           <button
@@ -141,16 +145,18 @@ export function Navbar() {
             </nav>
 
             <div className="flex flex-col gap-6 mt-8 pt-8 border-t border-border-subtle/50">
-              <Link
-                href="/enroll"
-                onClick={() => setIsMenuOpen(false)}
+              <button
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  openLeadModal();
+                }}
                 className="w-full inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-lg bg-primary hover:bg-primary-hover text-text-accent-dark font-semibold text-xs uppercase tracking-wider transition-colors shadow-sm cursor-pointer"
               >
-                <span>Apply Now</span>
+                <span>Free Consultation</span>
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
-              </Link>
+              </button>
 
               <a
                 href="tel:+919447726158"

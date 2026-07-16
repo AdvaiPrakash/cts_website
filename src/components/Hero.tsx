@@ -3,11 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { CONTENT } from "@/content";
-import { useLead } from "@/lead";
 import { Reveal } from "@/components/Reveal";
 
 export function Hero() {
-  const { openLeadModal } = useLead();
 
   return (
     <section className="relative w-full min-h-screen flex items-end pt-24 pb-20 px-6 overflow-hidden">
@@ -57,12 +55,12 @@ export function Hero() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </Link>
-              <button
-                onClick={openLeadModal}
+              <Link
+                href="/enroll"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-lg border border-white/20 hover:bg-white/10 text-white font-semibold text-sm transition-all cursor-pointer"
               >
-                <span>{CONTENT.hero.secondaryCta}</span>
-              </button>
+                <span>Apply Now</span>
+              </Link>
             </div>
           </Reveal>
         </div>
