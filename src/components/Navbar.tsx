@@ -52,10 +52,10 @@ export function Navbar() {
   const headerBgClass = isMenuOpen
     ? "bg-white/90 backdrop-blur-md border-b border-border-subtle/50 shadow-sm"
     : isScrolled
-      ? "bg-white/90 backdrop-blur-md border-b border-border-subtle/50 shadow-sm"
+      ? "bg-transparent border-none shadow-none md:bg-white/90 md:backdrop-blur-md md:border-b md:border-border-subtle/50 md:shadow-sm"
       : isHomepage
         ? "bg-transparent border-none shadow-none md:bg-bg-page md:border-b md:border-border-subtle"
-        : "bg-bg-page border-b border-border-subtle";
+        : "bg-transparent border-none shadow-none md:bg-bg-page md:border-b md:border-border-subtle";
 
   const logoFilterClass = isMenuOpen
     ? "brightness-0 md:logo-green-filter"
