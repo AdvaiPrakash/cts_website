@@ -53,17 +53,17 @@ export default function CertificatesPage() {
       {/* Header Banner */}
       <section className="relative w-full pt-16 sm:pt-28 md:pt-36 pb-12 px-6 bg-black/[0.01] border-b border-border-subtle">
         <div className="max-w-7xl mx-auto text-left space-y-4">
-          <Reveal direction="down">
+          <Reveal direction="down" instant>
             <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-text-page/60 bg-black/5 border border-border-subtle rounded-md">
               Verification Portal
             </span>
           </Reveal>
-          <Reveal direction="up">
+          <Reveal direction="up" instant>
             <h1 className="text-4xl sm:text-5xl md:text-[3.25rem] font-serif font-medium tracking-tight text-text-page leading-tight">
               Verify Certificates
             </h1>
           </Reveal>
-          <Reveal direction="up" delay={0.15}>
+          <Reveal direction="up" delay={0.15} instant>
             <p className="text-sm sm:text-base text-text-page/70 max-w-2xl leading-relaxed font-sans">
               Enter the student's unique registration number below to check the validity and view their training credentials.
             </p>

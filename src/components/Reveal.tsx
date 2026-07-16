@@ -10,6 +10,7 @@ interface RevealProps {
   delay?: number;
   duration?: number;
   className?: string;
+  instant?: boolean;
 }
 
 export function Reveal({
@@ -18,6 +19,7 @@ export function Reveal({
   delay = 0,
   duration = 0.8,
   className = "",
+  instant = false,
 }: RevealProps) {
   const getVariants = () => {
     const offset = 30;
@@ -39,8 +41,9 @@ export function Reveal({
   return (
     <motion.div
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
+      animate={instant ? "visible" : undefined}
+      whileInView={instant ? undefined : "visible"}
+      viewport={instant ? undefined : { once: true, margin: "-10% 0px -10% 0px" }}
       variants={getVariants()}
       transition={{
         duration,

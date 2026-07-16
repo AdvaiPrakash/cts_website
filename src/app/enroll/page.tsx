@@ -166,17 +166,17 @@ Submitted from website enrollment page.`;
             {/* Left Column: Sticky Page Header */}
             <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-8 text-left">
               <div className="space-y-4">
-                <Reveal direction="down">
+                <Reveal direction="down" instant>
                   <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#0f2d1e] bg-[#eef3e8] border border-[#0f2d1e]/15 rounded-md">
                     Student Portal
                   </span>
                 </Reveal>
-                <Reveal direction="up">
+                <Reveal direction="up" instant>
                   <h1 className="text-4xl sm:text-5xl font-serif font-medium tracking-tight text-text-page leading-tight">
                     Course Enrollment
                   </h1>
                 </Reveal>
-                <Reveal direction="up" delay={0.1}>
+                <Reveal direction="up" delay={0.1} instant>
                   <p className="text-text-page/70 text-sm sm:text-base leading-relaxed">
                     Apply now to book your seat. Fill in your educational profile details and our admissions coordinator will reach out to verify your registration.
                   </p>

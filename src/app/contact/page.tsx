@@ -84,17 +84,17 @@ export default function ContactPage() {
             <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-8 text-left">
               {/* Header text content */}
               <div className="space-y-4">
-                <Reveal direction="down">
+                <Reveal direction="down" instant>
                   <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-text-page/60 bg-black/5 dark:bg-white/5 border border-border-subtle rounded-md">
                     Contact Us
                   </span>
                 </Reveal>
-                <Reveal direction="up">
+                <Reveal direction="up" instant>
                   <h1 className="text-4xl sm:text-5xl font-serif font-medium tracking-tight text-text-page leading-tight">
                     Get In Touch
                   </h1>
                 </Reveal>
-                <Reveal direction="up" delay={0.1}>
+                <Reveal direction="up" delay={0.1} instant>
                   <p className="text-text-page/70 text-sm sm:text-base leading-relaxed">
                     Connect with our expert tax consultants and accounting professionals at any of our branches.
                   </p>
