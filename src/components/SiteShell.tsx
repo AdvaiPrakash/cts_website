@@ -46,7 +46,7 @@ export function SiteShell({ children }: SiteShellProps) {
           href="https://wa.me/919447726158"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-12 h-12 rounded-full bg-[#bef264] hover:bg-[#a6d84f] text-gray-950 flex items-center justify-center shadow-lg transition-all hover:scale-105 pointer-events-auto cursor-pointer"
+          className="w-12 h-12 rounded-full bg-[#25d366] hover:bg-[#22c35e] text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 pointer-events-auto cursor-pointer"
           aria-label="Chat on WhatsApp"
         >
           <Image 
@@ -54,7 +54,7 @@ export function SiteShell({ children }: SiteShellProps) {
             alt="WhatsApp" 
             width={28} 
             height={28} 
-            className="object-contain" 
+            className="object-contain brightness-0 invert" 
           />
         </a>
       </div>
