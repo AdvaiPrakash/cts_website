@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import { SiteShell } from "@/components/SiteShell";
 import { Reveal } from "@/components/Reveal";
