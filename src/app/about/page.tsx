@@ -57,7 +57,7 @@ export default function AboutPage() {
           
           {/* Left Column: Overlapping Images & Quick Stats (Sticky) */}
           <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-8 text-left">
-            <div className="relative w-full aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-bg-dark border border-border-subtle shadow-lg">
+            <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-bg-dark border border-border-subtle shadow-lg">
               <Image
                 src="/about-discuss.jpg"
                 alt="Accounting Discussion"
@@ -68,7 +68,7 @@ export default function AboutPage() {
 
             {/* Float WHRDE Badge */}
             <Reveal direction="left" delay={0.2}>
-              <div className="p-8 rounded-[2rem] bg-[#eef3e8] border border-[#0f2d1e]/10 space-y-4 shadow-sm">
+              <div className="p-8 rounded-xl bg-[#eef3e8] border border-[#0f2d1e]/10 space-y-4 shadow-sm">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-white px-3 py-1 rounded-full border border-emerald-500/10">
                   Accreditation
                 </span>
@@ -125,7 +125,7 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-2 gap-8 lg:gap-16 text-left">
             
             {/* Be a Certified Accountant Block */}
-            <Reveal direction="up" className="space-y-5 bg-white p-8 sm:p-10 rounded-[2rem] border border-border-subtle shadow-sm flex flex-col justify-between">
+            <Reveal direction="up" className="space-y-5 bg-white p-8 sm:p-10 rounded-xl border border-border-subtle shadow-sm flex flex-col justify-between">
               <div className="space-y-4">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full inline-block">
                   Professional Path
@@ -143,7 +143,7 @@ export default function AboutPage() {
             </Reveal>
 
             {/* Training & Facilities Block */}
-            <Reveal direction="up" delay={0.15} className="space-y-5 bg-[#eef3e8] p-8 sm:p-10 rounded-[2rem] border border-[#0f2d1e]/5 shadow-sm flex flex-col justify-between">
+            <Reveal direction="up" delay={0.15} className="space-y-5 bg-[#eef3e8] p-8 sm:p-10 rounded-xl border border-[#0f2d1e]/5 shadow-sm flex flex-col justify-between">
               <div className="space-y-4">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-white border border-emerald-100 px-3 py-1 rounded-full inline-block">
                   Classroom Setup
@@ -164,7 +164,7 @@ export default function AboutPage() {
 
           {/* Landscape Meeting Banner Image */}
           <Reveal direction="up" delay={0.2}>
-            <div className="relative w-full h-[380px] sm:h-[480px] rounded-[2.5rem] overflow-hidden border border-border-subtle shadow-md group">
+            <div className="relative w-full h-[380px] sm:h-[480px] rounded-xl overflow-hidden border border-border-subtle shadow-md group">
               <Image
                 src="/hero-meeting.jpg"
                 alt="Corporate Training Meeting"
@@ -243,7 +243,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-12 items-center">
           
           {/* Photo on left */}
-          <div className="md:col-span-5 flex items-center justify-center w-full h-[280px] p-8 rounded-[2rem] border border-border-subtle shadow-sm bg-white hover:shadow-lg transition-shadow duration-300">
+          <div className="md:col-span-5 flex items-center justify-center w-full h-[280px] p-8 rounded-xl border border-border-subtle shadow-sm bg-white hover:shadow-lg transition-shadow duration-300">
             <div className="relative w-full h-full">
               <Image
                 src="/whrde.jpg"
