@@ -39,8 +39,8 @@ export function SiteShell({ children }: SiteShellProps) {
       <Footer />
       <LeadModal />
 
-      {/* Floating Action Buttons: WhatsApp Chat & Apply Now Portal */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3.5 pointer-events-none">
+      {/* Floating Action Buttons: WhatsApp Chat */}
+      <div className="fixed bottom-6 right-6 z-50 pointer-events-none">
         {/* WhatsApp Chat Button */}
         <a
           href="https://wa.me/919447726158"
@@ -56,14 +56,6 @@ export function SiteShell({ children }: SiteShellProps) {
             height={28} 
             className="object-contain brightness-0 invert" 
           />
-        </a>
-
-        {/* Apply Now Portal Button */}
-        <a
-          href="/enroll"
-          className="px-5 py-3 rounded-lg bg-[#bef264] text-gray-950 hover:bg-[#a6d84f] text-xs font-bold uppercase tracking-wider shadow-lg transition-all hover:scale-105 pointer-events-auto cursor-pointer flex items-center gap-2"
-        >
-          <span>🎓 Apply Now</span>
         </a>
       </div>
     </div>
